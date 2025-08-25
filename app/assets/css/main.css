@@ -1,0 +1,226 @@
+@import "tailwindcss";
+
+/* @tailwind base; */
+/* @tailwind components; */
+/* @tailwind utilities; */
+
+/* Personal Expenditure Management - Design System
+Clean white theme with subtle green accents for financial wellness
+*/
+
+@layer base {
+  :root {
+    /* Core colors - White base theme */
+    --background: 0 0% 100%;
+    --foreground: 215 25% 27%;
+
+    /* Card system */
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 27%;
+    --card-hover: 210 17% 98%;
+
+    /* Popover system */
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 27%;
+
+    /* Primary - Emerald green for financial actions */
+    --primary: 158 64% 52%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 160 84% 39%;
+    --primary-lighter: 159 75% 85%;
+
+    /* Secondary - Soft gray tones */
+    --secondary: 210 17% 98%;
+    --secondary-foreground: 215 25% 27%;
+
+    /* Muted - Subtle backgrounds */
+    --muted: 210 17% 98%;
+    --muted-foreground: 215 13% 65%;
+
+    /* Accent - Light green for highlights */
+    --accent: 159 75% 85%;
+    --accent-foreground: 158 64% 52%;
+
+    /* Success - Green variations */
+    --success: 158 64% 52%;
+    --success-foreground: 0 0% 100%;
+    --success-light: 159 75% 85%;
+
+    /* Warning - Amber for alerts */
+    --warning: 43 96% 56%;
+    --warning-foreground: 0 0% 100%;
+    --warning-light: 48 100% 88%;
+
+    /* Destructive - Red for expenses/danger */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --destructive-light: 0 93% 94%;
+
+    /* Borders and inputs */
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 158 64% 52%;
+
+    /* Design tokens */
+    --radius: 0.75rem;
+
+    /* Financial specific colors */
+    --income: 158 64% 52%;
+    --income-light: 159 75% 85%;
+    --expense: 0 72% 51%;
+    --expense-light: 0 93% 94%;
+    --balance: 215 25% 27%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(158 64% 52%), hsl(160 84% 39%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(210 17% 98%));
+    --gradient-success: linear-gradient(135deg, hsl(158 64% 52%), hsl(142 71% 45%));
+
+    /* Shadows */
+    --shadow-card: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+    --shadow-hover: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
+    --shadow-focus: 0 0 0 3px hsl(158 64% 52% / 0.1);
+
+    /* Typography */
+    --font-heading: 'Inter', system-ui, sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Dark theme for optional support */
+    --background: 215 28% 17%;
+    --foreground: 210 20% 98%;
+
+    --card: 215 28% 17%;
+    --card-foreground: 210 20% 98%;
+    --card-hover: 215 25% 20%;
+
+    --popover: 215 28% 17%;
+    --popover-foreground: 210 20% 98%;
+
+    --primary: 158 64% 52%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 160 84% 39%;
+    --primary-lighter: 159 75% 25%;
+
+    --secondary: 215 25% 20%;
+    --secondary-foreground: 210 20% 98%;
+
+    --muted: 215 25% 20%;
+    --muted-foreground: 215 15% 70%;
+
+    --accent: 159 75% 25%;
+    --accent-foreground: 158 64% 52%;
+
+    --success: 158 64% 52%;
+    --success-foreground: 0 0% 100%;
+    --success-light: 159 75% 25%;
+
+    --warning: 43 96% 56%;
+    --warning-foreground: 0 0% 100%;
+    --warning-light: 48 100% 25%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --destructive-light: 0 93% 25%;
+
+    --border: 215 25% 25%;
+    --input: 215 25% 25%;
+    --ring: 158 64% 52%;
+
+    --income: 158 64% 52%;
+    --income-light: 159 75% 25%;
+    --expense: 0 72% 51%;
+    --expense-light: 0 93% 25%;
+    --balance: 210 20% 98%;
+
+    --sidebar-background: 215 28% 15%;
+    --sidebar-foreground: 210 20% 98%;
+    --sidebar-primary: 158 64% 52%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 25% 20%;
+    --sidebar-accent-foreground: 210 20% 98%;
+    --sidebar-border: 215 25% 25%;
+    --sidebar-ring: 158 64% 52%;
+  }
+}
+
+@layer utilities {
+  /* Financial specific utilities */
+  .text-income {
+    color: hsl(var(--income));
+  }
+
+  .text-expense {
+    color: hsl(var(--expense));
+  }
+
+  .text-balance {
+    color: hsl(var(--balance));
+  }
+
+  .bg-income-light {
+    background-color: hsl(var(--income-light));
+  }
+
+  .bg-expense-light {
+    background-color: hsl(var(--expense-light));
+  }
+
+  /* Card variations */
+  .card-hover {
+    background-color: hsl(var(--card-hover));
+  }
+
+  /* Gradient utilities */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .bg-gradient-card {
+    background: var(--gradient-card);
+  }
+
+  .bg-gradient-success {
+    background: var(--gradient-success);
+  }
+
+  /* Shadow utilities */
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  .shadow-hover {
+    box-shadow: var(--shadow-hover);
+  }
+
+  .shadow-focus {
+    box-shadow: var(--shadow-focus);
+  }
+
+  /* Animation utilities */
+  .transition-all-smooth {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+}
+
+@theme {
+  --border-color: hsl(var(--border));
+}
