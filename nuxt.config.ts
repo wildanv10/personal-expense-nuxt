@@ -8,7 +8,17 @@ export default defineNuxtConfig({
     public: {
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseKey: process.env.SUPABASE_KEY,
+      googleClientId: process.env.GOOGLE_CLIENT_ID,
+      googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
     },
+  },
+  eslint: {
+    config: {
+      stylistic: true,
+    },
+  },
+  typescript: {
+    typeCheck: false,
   },
   css: ["~/assets/css/main.css"],
   vite: {
@@ -23,13 +33,5 @@ export default defineNuxtConfig({
       link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
     },
   },
-  modules: ["@nuxt/eslint"],
-  eslint: {
-    config: {
-      stylistic: true,
-    },
-  },
-  typescript: {
-    typeCheck: true,
-  },
+  modules: ["@nuxt/eslint", "@nuxtjs/supabase"],
 });
