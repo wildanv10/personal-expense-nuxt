@@ -20,12 +20,12 @@ const signOut = async () => {
           Security
         </div>
       </div>
-      <UiCardContent class="p-6">
+      <div class="p-3 pt-6">
         <UiButton class="bg-red-600 border-red-700 text-white" @click="signOut">
           <LogOut :size="22" />
           Sign Out
         </UiButton>
-      </UiCardContent>
+      </div>
     </UiCard>
   </section>
 </template>
