@@ -1,11 +1,10 @@
 <script setup lang="ts">
-const supabase = useSupabaseClient();
-const { data: sessionData } = await supabase.auth.getSession();
+const { isAuthenticated } = useAuth();
 
 watch(
-  sessionData,
+  isAuthenticated,
   () => {
-    if (sessionData) {
+    if (isAuthenticated) {
       return navigateTo("/");
     }
   },

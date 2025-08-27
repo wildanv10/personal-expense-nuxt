@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import { LogOut, Shield } from "lucide-vue-next";
 
-const supabase = useSupabaseClient();
-const signOut = async () => {
-  const { error } = await supabase.auth.signOut();
-  if (error) console.log(error);
-  else navigateTo("/login");
-};
+const { signOut } = useAuth();
 </script>
 
 <template>

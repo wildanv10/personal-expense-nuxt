@@ -1,20 +1,19 @@
 <script setup lang="ts">
-const supabase = useSupabaseClient();
-const { data: sessionData } = await supabase.auth.getSession();
+const { user, isAuthenticated } = useAuth();
 </script>
 
 <template>
   <div class="bg-neutral-50 flex flex-col min-h-screen">
-    <AppHeader v-if="sessionData" />
+    <AppHeader v-if="isAuthenticated" />
     <main
       class="grow p-2"
       :class="{
-        'pb-16': sessionData,
-        'content-center': !sessionData,
+        'pb-16': isAuthenticated,
+        'content-center': !isAuthenticated,
       }"
     >
       <slot />
     </main>
-    <AppFooter v-if="sessionData" />
+    <AppFooter v-if="isAuthenticated" />
   </div>
 </template>
