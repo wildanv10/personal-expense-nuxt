@@ -9,7 +9,7 @@ import { ChartLine, House, UserCog } from "lucide-vue-next";
     <nav>
       <ul class="flex justify-center">
         <li class="">
-          <NuxtLink to="/" class="flex items-center py-3 px-5">
+          <NuxtLink to="/home/transactions" class="flex items-center py-3 px-5">
             <House :size="22" />
             <p class="text-lg ml-2">Home</p>
           </NuxtLink>

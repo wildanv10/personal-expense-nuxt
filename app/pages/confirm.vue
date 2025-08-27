@@ -5,7 +5,7 @@ watch(
   isAuthenticated,
   () => {
     if (isAuthenticated) {
-      return navigateTo("/");
+      return navigateTo("/home/transactions");
     }
   },
   { immediate: true }
