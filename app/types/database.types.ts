@@ -80,20 +80,26 @@ export type Database = {
       categories: {
         Row: {
           created_at: string | null;
+          icon: string | null;
           id: number;
           name: string;
+          type: Database["public"]["Enums"]["transaction_type"];
           user_id: string | null;
         };
         Insert: {
           created_at?: string | null;
+          icon?: string | null;
           id?: number;
           name: string;
+          type: Database["public"]["Enums"]["transaction_type"];
           user_id?: string | null;
         };
         Update: {
           created_at?: string | null;
+          icon?: string | null;
           id?: number;
           name?: string;
+          type?: Database["public"]["Enums"]["transaction_type"];
           user_id?: string | null;
         };
         Relationships: [];
@@ -101,18 +107,21 @@ export type Database = {
       payment_methods: {
         Row: {
           created_at: string | null;
+          icon: string | null;
           id: number;
           name: string;
           user_id: string | null;
         };
         Insert: {
           created_at?: string | null;
+          icon?: string | null;
           id?: number;
           name: string;
           user_id?: string | null;
         };
         Update: {
           created_at?: string | null;
+          icon?: string | null;
           id?: number;
           name?: string;
           user_id?: string | null;
@@ -123,6 +132,7 @@ export type Database = {
         Row: {
           category_id: number | null;
           created_at: string | null;
+          icon: string | null;
           id: number;
           name: string;
           user_id: string | null;
@@ -130,6 +140,7 @@ export type Database = {
         Insert: {
           category_id?: number | null;
           created_at?: string | null;
+          icon?: string | null;
           id?: number;
           name: string;
           user_id?: string | null;
@@ -137,6 +148,7 @@ export type Database = {
         Update: {
           category_id?: number | null;
           created_at?: string | null;
+          icon?: string | null;
           id?: number;
           name?: string;
           user_id?: string | null;
