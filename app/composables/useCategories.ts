@@ -6,6 +6,44 @@ export function useCategories() {
   const { userId } = useAuth();
   const { getSubCategories, subCategories } = useSubCategories();
   const categories = ref<Categories["Row"][]>([]);
+  // const categories = ref<Omit<Categories["Row"], "created_at" | "user_id">[]>([
+  //   {
+  //     id: 1,
+  //     name: "Food & Dining",
+  //     type: "expense",
+  //     icon: "🍔",
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Transportation",
+  //     type: "expense",
+  //     icon: "🚌",
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Utilities",
+  //     type: "expense",
+  //     icon: "💡",
+  //   },
+  //   {
+  //     id: 4,
+  //     name: "Entertainment",
+  //     type: "expense",
+  //     icon: "🎮",
+  //   },
+  //   {
+  //     id: 5,
+  //     name: "Salary",
+  //     type: "income",
+  //     icon: "💼",
+  //   },
+  //   {
+  //     id: 6,
+  //     name: "Freelance",
+  //     type: "income",
+  //     icon: "🧑‍💻",
+  //   },
+  // ]);
   const categoryExpenseOptions = ref<CategoryOptions[]>([]);
   const categoryIncomeOptions = ref<CategoryOptions[]>([]);
   const loading = ref(false);
