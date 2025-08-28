@@ -2,11 +2,10 @@ import type { Transactions } from "~/types/database.types";
 
 export function useTransactions() {
   const client = useSupabaseClient();
-  const { user } = useAuth();
+  const { userId } = useAuth();
   const transactions = ref<Transactions["Row"][]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
-  const userId = computed(() => user.value?.id);
 
   const getTransactions = async () => {
     loading.value = true;
