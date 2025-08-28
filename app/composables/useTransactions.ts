@@ -2,33 +2,34 @@ import type { Transactions } from "~/types/database.types";
 
 export function useTransactions() {
   const client = useSupabaseClient();
+  const { user } = useAuth();
   const transactions = ref<Transactions["Row"][]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
-  const { user } = useAuth();
-  const userId = user.value?.id;
+  const userId = computed(() => user.value?.id);
 
   const getTransactions = async () => {
     loading.value = true;
     error.value = null;
 
-    if (!userId) {
-      error.value = "User not authenticated";
-      loading.value = false;
-      return;
-    }
+    try {
+      if (!userId.value) {
+        throw new Error("User not authenticated");
+      }
 
-    const { data, error: err } = await client
-      .from("transactions")
-      .select("*")
-      .eq("user_id", userId)
-      .order("date", { ascending: false });
+      const { data, error: err } = await client
+        .from("transactions")
+        .select("*")
+        .eq("user_id", userId.value)
+        .order("date", { ascending: false });
 
-    loading.value = false;
-    if (err) {
-      error.value = err.message;
-    } else {
+      if (err) throw err;
+
       transactions.value = data ?? [];
+    } catch (err: any) {
+      error.value = err.message || "Unknown error";
+    } finally {
+      loading.value = false;
     }
   };
 
@@ -36,25 +37,27 @@ export function useTransactions() {
     loading.value = true;
     error.value = null;
 
-    if (!userId) {
-      error.value = "User not authenticated";
+    try {
+      if (!userId.value) {
+        throw new Error("User not authenticated");
+      }
+
+      const { data, error: err } = await client
+        .from("transactions")
+        .insert({ user_id: userId.value, ...transaction })
+        .select()
+        .single();
+
+      if (err) throw err;
+
+      const newTransaction = data as Transactions["Row"];
+      transactions.value.unshift(newTransaction);
+      return newTransaction;
+    } catch (err: any) {
+      error.value = err.message || "Unknown error";
+      throw err;
+    } finally {
       loading.value = false;
-      return;
-    }
-
-    const { data, error: err } = await client
-      .from("transactions")
-      .insert({ user_id: userId, ...transaction })
-      .select()
-      .single();
-
-    loading.value = false;
-    if (err) {
-      error.value = err.message;
-      return null;
-    } else {
-      transactions.value.unshift(data);
-      return data;
     }
   };
 
@@ -65,29 +68,32 @@ export function useTransactions() {
     loading.value = true;
     error.value = null;
 
-    if (!userId) {
-      error.value = "User not authenticated";
+    try {
+      if (!userId.value) {
+        throw new Error("User not authenticated");
+      }
+
+      const { data, error: err } = await client
+        .from("transactions")
+        .update({ user_id: userId.value, ...updates })
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (err) throw err;
+
+      const updatedTransaction = data as Transactions["Row"];
+      const index = transactions.value.findIndex((t) => t.id === id);
+      if (index !== -1) {
+        transactions.value[index] = updatedTransaction;
+      }
+
+      return updatedTransaction;
+    } catch (err: any) {
+      error.value = err.message || "Unknown error";
+      throw err;
+    } finally {
       loading.value = false;
-      return;
-    }
-
-    const { data, error: err } = await client
-      .from("transactions")
-      .update({ user_id: userId, ...updates })
-      .eq("id", id)
-      .select()
-      .single();
-
-    loading.value = false;
-    if (err) {
-      error.value = err.message;
-      return null;
-    } else {
-      const index = transactions.value.findIndex(
-        (transaction: Transactions["Row"]) => transaction.id === id
-      );
-      if (index !== -1) transactions.value[index] = data as Transactions["Row"];
-      return data as Transactions["Row"];
     }
   };
 
@@ -95,25 +101,25 @@ export function useTransactions() {
     loading.value = true;
     error.value = null;
 
-    if (!userId) {
-      error.value = "User not authenticated";
+    try {
+      if (!userId.value) {
+        throw new Error("User not authenticated");
+      }
+
+      const { error: err } = await client
+        .from("transactions")
+        .delete()
+        .eq("id", id)
+        .eq("user_id", userId.value);
+
+      if (err) throw err;
+
+      transactions.value = transactions.value.filter((t) => t.id !== id);
+    } catch (err: any) {
+      error.value = err.message || "Unknown error";
+      throw err;
+    } finally {
       loading.value = false;
-      return;
-    }
-
-    const { error: err } = await client
-      .from("transactions")
-      .delete()
-      .eq("id", id)
-      .eq("user_id", userId);
-
-    loading.value = false;
-    if (err) {
-      error.value = err.message;
-    } else {
-      transactions.value = transactions.value.filter(
-        (transaction: Transactions["Row"]) => transaction.id !== id
-      );
     }
   };
 
