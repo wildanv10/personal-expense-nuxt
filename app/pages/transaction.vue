@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { useTransactions } from "~/composables/useTransactions";
 import type { Transactions } from "~/types/database.types";
+import { useTransactions } from "~/composables/useTransactions";
 
 const { addTransaction } = useTransactions();
-// const { getCategories, categories } = useCategories(); // TODO: enable this API call
+const { getCategoryOptions, categoryExpenseOptions, categoryIncomeOptions } =
+  useCategories();
 
 // form state
 const form = ref<Transactions["Insert"]>({
@@ -19,62 +19,13 @@ const successMessage = ref("");
 const errorMessage = ref("");
 
 onMounted(async () => {
-  // TODO: enable this API call
-  // await getCategories();
-});
-
-// TODO: remove this dummy
-const categories = [
-  {
-    id: 1,
-    name: "Food & Dining",
-    type: "expense",
-    icon: "🍔",
-  },
-  {
-    id: 2,
-    name: "Transportation",
-    type: "expense",
-    icon: "🚌",
-  },
-  {
-    id: 3,
-    name: "Utilities",
-    type: "expense",
-    icon: "💡",
-  },
-  {
-    id: 4,
-    name: "Entertainment",
-    type: "expense",
-    icon: "🎮",
-  },
-  {
-    id: 5,
-    name: "Salary",
-    type: "income",
-    icon: "💼",
-  },
-  {
-    id: 6,
-    name: "Freelance",
-    type: "income",
-    icon: "🧑‍💻",
-  },
-];
-
-const expenseCategories = computed(() => {
-  return categories.filter((c) => c.type === constants.expense);
-});
-
-const incomeCategories = computed(() => {
-  return categories.filter((c) => c.type === constants.income);
+  await getCategoryOptions();
 });
 
 const categoryOptions = computed(() => {
   return form.value.type === constants.expense
-    ? expenseCategories.value
-    : incomeCategories.value;
+    ? categoryExpenseOptions.value
+    : categoryIncomeOptions.value;
 });
 
 const transactionType = computed(() => form.value.type);
@@ -140,10 +91,10 @@ const handleSubmit = async () => {
         <select v-model="form.category_id" class="border rounded p-2 w-full">
           <option
             v-for="category in categoryOptions"
-            :key="category.id"
-            :value="category.id"
+            :key="category.key"
+            :value="category.key"
           >
-            {{ category.name }}
+            {{ category.value }}
           </option>
         </select>
       </div>
