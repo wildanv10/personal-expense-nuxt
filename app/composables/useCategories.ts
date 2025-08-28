@@ -1,12 +1,15 @@
 import type { Categories } from "~/types/database.types";
+type CategoryOptions = { key: string; value: string };
 
 export function useCategories() {
   const client = useSupabaseClient();
-  const { user } = useAuth();
+  const { userId } = useAuth();
+  const { getSubCategories, subCategories } = useSubCategories();
   const categories = ref<Categories["Row"][]>([]);
+  const categoryExpenseOptions = ref<CategoryOptions[]>([]);
+  const categoryIncomeOptions = ref<CategoryOptions[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
-  const userId = computed(() => user.value?.id);
 
   const getCategories = async () => {
     loading.value = true;
@@ -29,6 +32,37 @@ export function useCategories() {
       error.value = err.message || "Unknown error";
     } finally {
       loading.value = false;
+    }
+  };
+
+  const getCategoryOptions = async () => {
+    categoryExpenseOptions.value = [];
+    categoryIncomeOptions.value = [];
+    await Promise.all([getCategories(), getSubCategories()]);
+
+    const result: CategoryOptions[] = [];
+
+    for (const sub of subCategories.value) {
+      const categoryExpense = categories.value
+        .filter((c) => c.type === constants.expense)
+        .find((c) => c.id === sub.category_id);
+      const categoryIncome = categories.value
+        .filter((c) => c.type === constants.income)
+        .find((c) => c.id === sub.category_id);
+
+      if (categoryExpense) {
+        categoryExpenseOptions.value.push({
+          key: `${categoryExpense.id}-${sub.id}`,
+          value: `${categoryExpense.name} | ${sub.name}`,
+        });
+      }
+
+      if (categoryIncome) {
+        categoryIncomeOptions.value.push({
+          key: `${categoryIncome.id}-${sub.id}`,
+          value: `${categoryIncome.name} | ${sub.name}`,
+        });
+      }
     }
   };
 
@@ -114,9 +148,12 @@ export function useCategories() {
 
   return {
     categories,
+    categoryExpenseOptions,
+    categoryIncomeOptions,
     loading,
     error,
     getCategories,
+    getCategoryOptions,
     addCategory,
     updateCategory,
     deleteCategory,
