@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import type { Transactions } from "~/types/database.types";
+import type { Enums, Transactions } from "~/types/database.types";
 import { useTransactions } from "~/composables/useTransactions";
 
 const { addTransaction } = useTransactions();
 const { getCategoryOptions, categoryExpenseOptions, categoryIncomeOptions } =
   useCategories();
 
-// form state
-const form = ref<Transactions["Insert"]>({
+// State
+const form = ref({
   type: "expense",
   amount: 0,
-  category_id: null,
+  category_id: "",
+  payment_method_id: "",
   description: "",
   date: new Date().toISOString().substring(0, 10),
 });
@@ -18,20 +19,32 @@ const loading = ref(false);
 const successMessage = ref("");
 const errorMessage = ref("");
 
+// Mounted
 onMounted(async () => {
   await getCategoryOptions();
 });
 
-const categoryOptions = computed(() => {
-  return form.value.type === constants.expense
-    ? categoryExpenseOptions.value
-    : categoryIncomeOptions.value;
-});
+// Methods
+const getTransactionPayload = (): Transactions["Insert"] => {
+  const formData = form.value;
 
-const transactionType = computed(() => form.value.type);
-watch(transactionType, () => {
-  form.value.category_id = null;
-});
+  const [categoryIdStr, subCategoryIdStr] =
+    formData.category_id?.split("-") ?? [];
+
+  const categoryId = categoryIdStr ? parseInt(categoryIdStr) : null;
+  const subCategoryId = subCategoryIdStr ? parseInt(subCategoryIdStr) : null;
+  const paymentMethodId = form.value.payment_method_id
+    ? parseInt(form.value.payment_method_id)
+    : null;
+
+  return {
+    ...formData,
+    type: formData.type as Enums<"transaction_type">,
+    category_id: categoryId,
+    sub_category_id: subCategoryId,
+    payment_method_id: paymentMethodId,
+  };
+};
 
 const handleSubmit = async () => {
   loading.value = true;
@@ -39,15 +52,9 @@ const handleSubmit = async () => {
   errorMessage.value = "";
 
   try {
-    await addTransaction(form.value);
+    await addTransaction(getTransactionPayload());
     successMessage.value = "Transaction added successfully!";
-    form.value = {
-      type: "expense",
-      amount: 0,
-      category_id: null,
-      description: "",
-      date: new Date().toISOString(),
-    };
+    clearForm();
 
     navigateTo("/home/transactions");
   } catch (error: any) {
@@ -56,6 +63,31 @@ const handleSubmit = async () => {
     loading.value = false;
   }
 };
+
+const clearForm = () => {
+  form.value = {
+    type: "expense",
+    amount: 0,
+    category_id: "",
+    payment_method_id: "",
+    description: "",
+    date: new Date().toISOString(),
+  };
+};
+
+// Computed
+const categoryOptions = computed(() => {
+  return form.value.type === constants.expense
+    ? categoryExpenseOptions.value
+    : categoryIncomeOptions.value;
+});
+
+const transactionType = computed(() => form.value.type);
+
+// Watcher
+watch(transactionType, () => {
+  form.value.category_id = "";
+});
 </script>
 
 <template>
