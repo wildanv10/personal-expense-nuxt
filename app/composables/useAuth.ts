@@ -1,6 +1,7 @@
 export const useAuth = () => {
   const supabase = useSupabaseClient();
   const user = useSupabaseUser();
+  const userId = computed(() => user.value?.id);
   const isAuthenticated = computed(() => !!user.value);
 
   const signInWithGoogle = async () => {
@@ -24,6 +25,7 @@ export const useAuth = () => {
   return {
     supabase,
     user,
+    userId,
     isAuthenticated,
     signInWithGoogle,
     signOut,
