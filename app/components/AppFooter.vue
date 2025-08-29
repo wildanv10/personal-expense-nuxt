@@ -1,7 +1,3 @@
-<script setup lang="ts">
-import { ChartLine, House, UserCog } from "lucide-vue-next";
-</script>
-
 <template>
   <footer
     class="fixed bottom-0 w-full py-2 bg-white border-t border-(--border-color)"
@@ -10,19 +6,20 @@ import { ChartLine, House, UserCog } from "lucide-vue-next";
       <ul class="flex justify-center">
         <li class="">
           <NuxtLink to="/home/transactions" class="flex items-center py-3 px-5">
-            <House :size="22" />
+            <UIcon name="i-lucide-house" class="size-6" />
+
             <p class="text-lg ml-2">Home</p>
           </NuxtLink>
         </li>
         <li class="">
           <NuxtLink to="/statistics" class="flex items-center py-3 px-5">
-            <ChartLine :size="22" />
+            <UIcon name="i-lucide-chart-line" class="size-6" />
             <p class="text-lg ml-2">Statistics</p>
           </NuxtLink>
         </li>
         <li class="">
           <NuxtLink to="/settings" class="flex items-center py-3 px-5">
-            <UserCog :size="22" />
+            <UIcon name="i-lucide-user-cog" class="size-6" />
             <p class="text-lg ml-2">Settings</p>
           </NuxtLink>
         </li>

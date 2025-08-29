@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { LogOut, Settings2, Shield, ChevronRight } from "lucide-vue-next";
-
 const { signOut } = useAuth();
 </script>
 
@@ -11,26 +9,26 @@ const { signOut } = useAuth();
     >
       <div class="px-3 pt-3">
         <div class="flex items-center gap-2 text-lg font-heading">
-          <Settings2 class="h-5 w-5" />
+          <UIcon name="i-lucide-settings-2" class="size-6" />
           Configuration
         </div>
       </div>
       <div class="p-3 pt-6">
         <div class="px-2">
           <NuxtLink :to="constants.routes.settings_categories">
-            <div class="py-3 flex justify-between">
+            <div class="py-3 flex justify-between items-center">
               <p>Categories</p>
-              <ChevronRight />
+              <UIcon name="i-lucide-chevron-right" class="size-5" />
             </div>
           </NuxtLink>
         </div>
         <div class="px-2">
           <NuxtLink :to="constants.routes.settings_payment_methods">
             <div
-              class="py-3 flex justify-between border-t border-(--border-color)"
+              class="py-3 flex justify-between items-center border-t border-(--border-color)"
             >
               <p>Payment Methods</p>
-              <ChevronRight />
+              <UIcon name="i-lucide-chevron-right" class="size-5" />
             </div>
           </NuxtLink>
         </div>
@@ -41,13 +39,13 @@ const { signOut } = useAuth();
     >
       <div class="px-3 pt-3">
         <div class="flex items-center gap-2 text-lg font-heading">
-          <Shield class="h-5 w-5" />
+          <UIcon name="i-lucide-shield" class="size-6" />
           Security
         </div>
       </div>
       <div class="p-3 pt-6">
         <UiButton class="bg-red-600 border-red-700 text-white" @click="signOut">
-          <LogOut :size="22" />
+          <UIcon name="i-lucide-log-out" class="size-6" />
           Sign Out
         </UiButton>
       </div>
