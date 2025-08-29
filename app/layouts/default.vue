@@ -3,10 +3,10 @@ const { user, isAuthenticated } = useAuth();
 </script>
 
 <template>
-  <div class="bg-neutral-50 flex flex-col min-h-screen">
+  <div class="flex flex-col min-h-screen">
     <AppHeader v-if="isAuthenticated" />
     <main
-      class="grow p-2"
+      class="main"
       :class="{
         'pb-16': isAuthenticated,
         'content-center': !isAuthenticated,
