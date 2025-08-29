@@ -33,5 +33,5 @@ export default defineNuxtConfig({
       link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
     },
   },
-  modules: ["@nuxt/eslint", "@nuxtjs/supabase"],
+  modules: ["@nuxt/ui", "@nuxt/eslint", "@nuxtjs/supabase"],
 });
