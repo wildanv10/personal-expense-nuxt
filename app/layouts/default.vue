@@ -4,7 +4,7 @@ const { isAuthenticated } = useAuth();
 
 <template>
   <div class="flex flex-col min-h-screen">
-    <AppHeader v-if="isAuthenticated" />
+    <AppHeader />
     <main
       class="main"
       :class="{
