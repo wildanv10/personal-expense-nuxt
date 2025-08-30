@@ -4,6 +4,7 @@ export function usePaymentMethods() {
   const client = useSupabaseClient();
   const paymentMethods = ref<PaymentMethods["Row"][]>([]);
   const loading = ref(false);
+  const loadingDelete = ref(false);
   const error = ref<string | null>(null);
   const { user } = useAuth();
 
@@ -92,7 +93,7 @@ export function usePaymentMethods() {
   };
 
   const deletePaymentMethod = async (id: number) => {
-    loading.value = true;
+    loadingDelete.value = true;
     error.value = null;
     try {
       if (!userId.value) throw new Error("User not authenticated");
@@ -108,13 +109,14 @@ export function usePaymentMethods() {
       error.value = err.message || "Unknown error";
       throw err;
     } finally {
-      loading.value = false;
+      loadingDelete.value = false;
     }
   };
 
   return {
     paymentMethods,
     loading,
+    loadingDelete,
     error,
     getPaymentMethods,
     getPaymentMethodById,

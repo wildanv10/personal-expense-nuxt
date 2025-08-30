@@ -5,8 +5,14 @@ import type { PaymentMethods } from "~/types/database.types";
 
 // Composables
 const toast = useToast();
-const { getPaymentMethodById, updatePaymentMethod, loading, error } =
-  usePaymentMethods();
+const {
+  getPaymentMethodById,
+  updatePaymentMethod,
+  deletePaymentMethod,
+  loading,
+  loadingDelete,
+  error,
+} = usePaymentMethods();
 
 // Types
 type Schema = z.output<typeof schema>;
@@ -31,6 +37,7 @@ const schema = z.object({
   name: z.string().min(1),
   icon: z.string().nullable(),
 });
+const isConfirmDeleteOpen = ref(false);
 
 onMounted(async () => {
   try {
@@ -77,6 +84,30 @@ async function onUpdate(event: FormSubmitEvent<Schema>) {
     });
   }
 }
+async function onDelete() {
+  try {
+    if (!props.selectedId) throw new Error("Cannot delete Payment Method.");
+
+    await deletePaymentMethod(props.selectedId);
+    if (error.value) throw new Error("Cannot delete Payment Method.");
+
+    toast.add({
+      title: "Success",
+      description: "The Payment Method has been deleted.",
+      color: "success",
+    });
+
+    emits("update");
+  } catch (err: any) {
+    console.error(error.value || err);
+
+    toast.add({
+      title: "Error",
+      description: error.value || err.message,
+      color: "error",
+    });
+  }
+}
 </script>
 
 <template>
@@ -88,7 +119,7 @@ async function onUpdate(event: FormSubmitEvent<Schema>) {
     @submit="onUpdate"
   >
     <UFormField label="Name" name="name">
-      <UInput v-model="state.name" size="lg" autofocus class="w-full" />
+      <UInput v-model="state.name" size="lg" class="w-full" />
     </UFormField>
 
     <UFormField label="Icon" name="icon">
@@ -105,7 +136,42 @@ async function onUpdate(event: FormSubmitEvent<Schema>) {
       </template>
     </UFormField>
 
-    <div class="flex justify-end">
+    <div class="flex justify-between">
+      <!-- Delete Button -->
+      <div>
+        <UPopover v-model:open="isConfirmDeleteOpen" mode="click" arrow>
+          <UButton type="button" color="error" size="lg"> Delete </UButton>
+
+          <template #content>
+            <div class="p-4">
+              <p>Are you sure want to delete?</p>
+              <div class="flex gap-2 pt-2 justify-end">
+                <UButton
+                  type="button"
+                  color="error"
+                  size="md"
+                  :loading="loadingDelete"
+                  @click="onDelete"
+                >
+                  Yes
+                </UButton>
+                <UButton
+                  type="button"
+                  color="neutral"
+                  variant="outline"
+                  size="md"
+                  :disabled="loadingDelete"
+                  @click="isConfirmDeleteOpen = false"
+                >
+                  No
+                </UButton>
+              </div>
+            </div>
+          </template>
+        </UPopover>
+      </div>
+
+      <!-- Update Button -->
       <UButton type="submit" :loading="loading" size="lg"> Update </UButton>
     </div>
   </UForm>
