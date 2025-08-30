@@ -49,7 +49,7 @@ async function onCloseDrawerEdit() {
       </div>
 
       <!-- Card Content -->
-      <div class="card-content pt-3">
+      <div class="card-content pt-6">
         <div class="payment-method-add mb-3">
           <UButton
             icon="i-lucide-plus"

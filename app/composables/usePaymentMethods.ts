@@ -19,7 +19,7 @@ export function usePaymentMethods() {
         .from("payment_methods")
         .select("*")
         .eq("user_id", userId.value)
-        .order("created_at", { ascending: false });
+        .order("name", { ascending: true });
 
       if (err) throw err;
       paymentMethods.value = data ?? [];
