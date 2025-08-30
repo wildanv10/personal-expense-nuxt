@@ -14,13 +14,7 @@ Clean white theme with subtle green accents for financial wellness
       hsl(160 84% 39%)
     );
   }
-}
 
-@theme static {
-  --color-primary: var(--color-lime-500);
-}
-
-@layer components {
   .main {
     background-color: var(--color-gray-50);
     padding: --spacing(2);
@@ -43,6 +37,10 @@ Clean white theme with subtle green accents for financial wellness
   .card-list:last-child {
     border-bottom: 0;
   }
+}
+
+@theme static {
+  --color-primary: var(--color-lime-500);
 }
 
 @layer utilities {
