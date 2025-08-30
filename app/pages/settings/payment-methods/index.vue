@@ -1,27 +1,39 @@
 <script setup lang="ts">
+// Composables
 const { getPaymentMethods, paymentMethods, loading, error } =
   usePaymentMethods();
 
+// Types
 type PaymentMethodID = number | null;
 
-const selectedPm = ref<PaymentMethodID>(null);
+// State
+const selectedPM = ref<PaymentMethodID>(null);
 const isDrawerAddOpen = ref(false);
+const isDrawerEditOpen = ref(false);
 
 onMounted(async () => {
   await getPaymentMethods();
 });
 
+// Methods
 function selectPM(pmId: PaymentMethodID) {
-  selectedPm.value = pmId;
+  selectedPM.value = pmId;
+  isDrawerEditOpen.value = true;
 }
-
 function isActive(pmId: PaymentMethodID) {
-  return pmId === selectedPm.value;
+  return pmId === selectedPM.value;
 }
-
 async function onAddPM() {
   await getPaymentMethods();
   isDrawerAddOpen.value = false;
+}
+async function onUpdatePM() {
+  await getPaymentMethods();
+  onCloseDrawerEdit();
+}
+async function onCloseDrawerEdit() {
+  isDrawerEditOpen.value = false;
+  selectedPM.value = null;
 }
 </script>
 
@@ -75,7 +87,6 @@ async function onAddPM() {
     <!-- Drawer Add -->
     <UDrawer
       v-model:open="isDrawerAddOpen"
-      title="Add Payment Method"
       :dismissible="false"
       :handle="false"
       :ui="{ header: 'flex items-center justify-between' }"
@@ -93,6 +104,34 @@ async function onAddPM() {
 
       <template #body>
         <SettingsPaymentMethodAdd class="px-4" @submit="onAddPM" />
+      </template>
+    </UDrawer>
+
+    <!-- Drawer Edit -->
+    <UDrawer
+      v-model:open="isDrawerEditOpen"
+      :dismissible="false"
+      :handle="false"
+      :ui="{ header: 'flex items-center justify-between' }"
+    >
+      <template #header>
+        <h2 class="text-highlighted font-semibold">Edit Payment Method</h2>
+
+        <UButton
+          color="neutral"
+          variant="ghost"
+          icon="i-lucide-x"
+          @click="onCloseDrawerEdit"
+        />
+      </template>
+
+      <template #body>
+        <SettingsPaymentMethodEdit
+          class="px-4"
+          :selected-id="selectedPM"
+          @update="onUpdatePM"
+          @close="onCloseDrawerEdit"
+        />
       </template>
     </UDrawer>
   </section>
