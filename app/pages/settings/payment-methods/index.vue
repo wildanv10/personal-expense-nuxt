@@ -24,12 +24,12 @@ function isActive(pmId: PaymentMethodID) {
   return pmId === selectedPM.value;
 }
 async function onAddPM() {
-  await getPaymentMethods();
   isDrawerAddOpen.value = false;
+  await getPaymentMethods();
 }
 async function onUpdatePM() {
-  await getPaymentMethods();
   onCloseDrawerEdit();
+  await getPaymentMethods();
 }
 async function onCloseDrawerEdit() {
   isDrawerEditOpen.value = false;
