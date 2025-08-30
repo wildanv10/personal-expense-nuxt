@@ -30,6 +30,16 @@ export function usePaymentMethods() {
     }
   };
 
+  const getPaymentMethodById = async (
+    id: number
+  ): Promise<PaymentMethods["Row"] | undefined> => {
+    if (paymentMethods.value.length < 1) {
+      await getPaymentMethods();
+    }
+
+    return paymentMethods.value.find((pm) => pm.id === id);
+  };
+
   const addPaymentMethod = async (payload: PaymentMethods["Insert"]) => {
     loading.value = true;
     error.value = null;
@@ -107,6 +117,7 @@ export function usePaymentMethods() {
     loading,
     error,
     getPaymentMethods,
+    getPaymentMethodById,
     addPaymentMethod,
     updatePaymentMethod,
     deletePaymentMethod,
