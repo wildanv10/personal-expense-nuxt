@@ -5,51 +5,22 @@ export function useCategories() {
   const client = useSupabaseClient();
   const { userId } = useAuth();
   const { getSubCategories, subCategories } = useSubCategories();
-  const categories = ref<Categories["Row"][]>([]);
-  // const categories = ref<Omit<Categories["Row"], "created_at" | "user_id">[]>([
-  //   {
-  //     id: 1,
-  //     name: "Food & Dining",
-  //     type: "expense",
-  //     icon: "🍔",
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Transportation",
-  //     type: "expense",
-  //     icon: "🚌",
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Utilities",
-  //     type: "expense",
-  //     icon: "💡",
-  //   },
-  //   {
-  //     id: 4,
-  //     name: "Entertainment",
-  //     type: "expense",
-  //     icon: "🎮",
-  //   },
-  //   {
-  //     id: 5,
-  //     name: "Salary",
-  //     type: "income",
-  //     icon: "💼",
-  //   },
-  //   {
-  //     id: 6,
-  //     name: "Freelance",
-  //     type: "income",
-  //     icon: "🧑‍💻",
-  //   },
-  // ]);
-  const categoryExpenseOptions = ref<CategoryOptions[]>([]);
-  const categoryIncomeOptions = ref<CategoryOptions[]>([]);
+  const categories = useState<Categories["Row"][]>("categories", () => []);
+  const isCategoryRetrieved = useState("isCategoryRetrieved", () => false);
+  const categoryExpenseOptions = useState<CategoryOptions[]>(
+    "categoryExpenseOptions",
+    () => []
+  );
+  const categoryIncomeOptions = useState<CategoryOptions[]>(
+    "categoryIncomeOptions",
+    () => []
+  );
   const loading = ref(false);
   const error = ref<string | null>(null);
 
   const getCategories = async () => {
+    if (isCategoryRetrieved.value) return;
+
     loading.value = true;
     error.value = null;
 
@@ -66,6 +37,7 @@ export function useCategories() {
       if (err) throw err;
 
       categories.value = data as Categories["Row"][];
+      isCategoryRetrieved.value = true;
     } catch (err: any) {
       error.value = err.message || "Unknown error";
     } finally {
