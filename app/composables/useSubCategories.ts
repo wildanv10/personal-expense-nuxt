@@ -41,6 +41,16 @@ export function useSubCategories() {
     }
   };
 
+  const getSubCategoryByCategoryId = async (
+    id: number
+  ): Promise<Omit<SubCategories["Row"], "created_at" | "user_id">[] | []> => {
+    if (subCategories.value.length < 1) {
+      await getSubCategories();
+    }
+
+    return subCategories.value.filter((item) => item.category_id === id);
+  };
+
   const addSubCategory = async (payload: SubCategories["Insert"]) => {
     loading.value = true;
     error.value = null;
@@ -126,6 +136,7 @@ export function useSubCategories() {
     loading,
     error,
     getSubCategories,
+    getSubCategoryByCategoryId,
     addSubCategory,
     updateSubCategory,
     deleteSubCategory,
