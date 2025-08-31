@@ -2,7 +2,10 @@ import type { PaymentMethods } from "~/types/database.types";
 
 export function usePaymentMethods() {
   const client = useSupabaseClient();
-  const paymentMethods = ref<PaymentMethods["Row"][]>([]);
+  const paymentMethods = useState<PaymentMethods["Row"][]>(
+    "paymentMethods",
+    () => []
+  );
   const loading = ref(false);
   const loadingDelete = ref(false);
   const error = ref<string | null>(null);
@@ -11,6 +14,8 @@ export function usePaymentMethods() {
   const userId = computed(() => user.value?.id);
 
   const getPaymentMethods = async () => {
+    if (paymentMethods.value.length > 1) return;
+
     loading.value = true;
     error.value = null;
     try {
