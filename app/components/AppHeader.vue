@@ -4,7 +4,9 @@ const { isAuthenticated } = useAuth();
 </script>
 
 <template>
-  <header class="sticky top-0 z-50 w-full bg-white border-b border-gray-300">
+  <header
+    class="sticky top-0 z-50 w-full bg-primary border-b border-primary text-green-900"
+  >
     <div class="container flex h-16 items-center justify-center px-4 relative">
       <UiLogo />
       <span
