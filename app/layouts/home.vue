@@ -29,7 +29,7 @@ onMounted(async () => {
                 type="button"
                 class="absolute right-2 top-0 rounded-full flex text-primary bg-gradient-primary p-1 cursor-pointer active:bg-green-800/80 transition"
               >
-                <UIcon name="i-lucide-plus" size="40" />
+                <UIcon name="i-lucide-plus" size="36" />
               </button>
             </NuxtLink>
           </div>
