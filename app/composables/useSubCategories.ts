@@ -3,105 +3,20 @@ import type { SubCategories } from "~/types/database.types";
 export function useSubCategories() {
   const client = useSupabaseClient();
   const { userId } = useAuth();
-  const subCategories = ref<SubCategories["Row"][]>([]);
-  // const subCategories = ref<
-  //   Omit<SubCategories["Row"], "created_at" | "user_id">[]
-  // >([
-  //   {
-  //     category_id: 1,
-  //     id: 1,
-  //     name: "Groceries",
-  //     icon: "🛒",
-  //   },
-  //   {
-  //     category_id: 1,
-  //     id: 2,
-  //     name: "Restaurants",
-  //     icon: "🍽️",
-  //   },
-  //   {
-  //     category_id: 1,
-  //     id: 3,
-  //     name: "Coffee",
-  //     icon: "☕",
-  //   },
-  //   {
-  //     category_id: 2,
-  //     id: 4,
-  //     name: "Public Transport",
-  //     icon: "🚇",
-  //   },
-  //   {
-  //     category_id: 2,
-  //     id: 5,
-  //     name: "Fuel",
-  //     icon: "⛽",
-  //   },
-  //   {
-  //     category_id: 2,
-  //     id: 6,
-  //     name: "Taxi",
-  //     icon: "🚕",
-  //   },
-  //   {
-  //     category_id: 3,
-  //     id: 7,
-  //     name: "Electricity",
-  //     icon: "⚡",
-  //   },
-  //   {
-  //     category_id: 3,
-  //     id: 8,
-  //     name: "Water",
-  //     icon: "🚰",
-  //   },
-  //   {
-  //     category_id: 3,
-  //     id: 9,
-  //     name: "Internet",
-  //     icon: "🌐",
-  //   },
-  //   {
-  //     category_id: 4,
-  //     id: 10,
-  //     name: "Movies",
-  //     icon: "🎬",
-  //   },
-  //   {
-  //     category_id: 4,
-  //     id: 11,
-  //     name: "Games",
-  //     icon: "🎲",
-  //   },
-  //   {
-  //     category_id: 5,
-  //     id: 12,
-  //     name: "Monthly Salary",
-  //     icon: "📅",
-  //   },
-  //   {
-  //     category_id: 5,
-  //     id: 13,
-  //     name: "Bonus",
-  //     icon: "💰",
-  //   },
-  //   {
-  //     category_id: 6,
-  //     id: 14,
-  //     name: "Client Work",
-  //     icon: "📂",
-  //   },
-  //   {
-  //     category_id: 6,
-  //     id: 15,
-  //     name: "Consulting",
-  //     icon: "🧠",
-  //   },
-  // ]);
+  const subCategories = useState<SubCategories["Row"][]>(
+    "subCategories",
+    () => []
+  );
+  const isSubCategoryRetrieved = useState(
+    "isSubCategoryRetrieved",
+    () => false
+  );
   const loading = ref(false);
   const error = ref<string | null>(null);
 
   const getSubCategories = async () => {
+    if (isSubCategoryRetrieved.value) return;
+
     loading.value = true;
     error.value = null;
 
@@ -118,6 +33,7 @@ export function useSubCategories() {
       if (err) throw err;
 
       subCategories.value = data as SubCategories["Row"][];
+      isSubCategoryRetrieved.value = true;
     } catch (err: any) {
       error.value = err.message || "Unknown error";
     } finally {
