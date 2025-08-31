@@ -8,7 +8,7 @@ const { isAuthenticated } = useAuth();
     <main
       class="main"
       :class="{
-        'pb-16': isAuthenticated,
+        'pb-20': isAuthenticated,
         'content-center': !isAuthenticated,
       }"
     >
