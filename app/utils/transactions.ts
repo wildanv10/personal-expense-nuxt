@@ -43,3 +43,39 @@ export function groupTransactionsByDate(
       return groups;
     }, {} as Record<string, TransactionWithRelations[]>);
 }
+
+/**
+ * Calculates the total income, total expense, and balance from a list of transactions.
+ *
+ * @param transactions - Array of transaction objects
+ * @returns An object containing:
+ *   - income: total income amount
+ *   - expense: total expense amount
+ *   - balance: income minus expense
+ */
+export function calculateTransactionSummary(
+  transactions: TransactionWithRelations[]
+): {
+  income: number;
+  expense: number;
+  balance: number;
+} {
+  let income = 0;
+  let expense = 0;
+
+  for (const tx of transactions) {
+    if (tx.type === "income") {
+      income += tx.amount;
+    } else if (tx.type === "expense") {
+      expense += tx.amount;
+    }
+  }
+
+  const balance = income - expense;
+
+  return {
+    income,
+    expense,
+    balance,
+  };
+}

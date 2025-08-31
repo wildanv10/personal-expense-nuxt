@@ -1,7 +1,17 @@
+<script setup lang="ts">
+definePageMeta({
+  layout: false,
+});
+
+onMounted(() => {
+  navigateTo(constants.routes.home_transactions);
+});
+</script>
+
 <template>
   <div>
-    <h1>Home</h1>
-    <p>This page will be displayed at the /home route.</p>
-    <NuxtPage />
+    <NuxtLayout name="home">
+      <NuxtPage />
+    </NuxtLayout>
   </div>
 </template>
