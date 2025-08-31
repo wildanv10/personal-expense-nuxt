@@ -7,7 +7,7 @@ const { isAuthenticated } = useAuth();
   <header
     class="sticky top-0 z-50 w-full bg-primary border-b border-primary text-green-900"
   >
-    <div class="container flex h-16 items-center justify-center px-4 relative">
+    <div class="container flex items-center justify-center px-4 py-3 relative">
       <UiLogo />
       <span
         v-if="isAuthenticated"
