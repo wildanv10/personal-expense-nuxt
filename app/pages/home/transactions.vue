@@ -1,12 +1,8 @@
 <script setup lang="ts">
-const { getTransactions, transactions, loading, error } = useTransactions();
+const { transactions, loading, error } = useTransactions();
 
 definePageMeta({
   layout: "home",
-});
-
-onMounted(async () => {
-  await getTransactions();
 });
 </script>
 

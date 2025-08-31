@@ -1,18 +1,11 @@
 <script setup lang="ts">
-const { transactions } = useTransactions();
+const { getTransactions, transactions } = useTransactions();
 
 // State
-const summary = ref({
-  balance: 0,
-  income: 0,
-  expense: 0,
-});
+const summary = computed(() => calculateTransactionSummary(transactions.value));
 
-onMounted(() => {
-  const transactionSummary = calculateTransactionSummary(transactions.value);
-  summary.value.balance = transactionSummary.balance;
-  summary.value.income = transactionSummary.income;
-  summary.value.expense = transactionSummary.expense;
+onMounted(async () => {
+  await getTransactions();
 });
 </script>
 
