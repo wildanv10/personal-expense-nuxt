@@ -4,7 +4,10 @@ import type { TransactionWithRelations } from "~/types/transactions";
 export function useTransactions() {
   const client = useSupabaseClient();
   const { userId } = useAuth();
-  const transactions = ref<TransactionWithRelations[]>([]);
+  const transactions = useState<TransactionWithRelations[]>(
+    "transactions",
+    () => []
+  );
   const loading = ref(false);
   const error = ref<string | null>(null);
 
