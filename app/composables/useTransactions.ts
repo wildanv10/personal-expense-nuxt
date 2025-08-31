@@ -1,9 +1,10 @@
 import type { Transactions } from "~/types/database.types";
+import type { TransactionWithRelations } from "~/types/transactions";
 
 export function useTransactions() {
   const client = useSupabaseClient();
   const { userId } = useAuth();
-  const transactions = ref<Transactions["Row"][]>([]);
+  const transactions = ref<TransactionWithRelations[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
 
@@ -18,13 +19,37 @@ export function useTransactions() {
 
       const { data, error: err } = await client
         .from("transactions")
-        .select("*")
+        .select(
+          `
+            id,
+            type,
+            date,
+            amount,
+            description,
+            created_at,
+            categories (
+              id,
+              name,
+              icon
+            ),
+            sub_categories (
+              id,
+              name,
+              icon
+            ),
+            payment_methods (
+              id,
+              name,
+              icon
+            )
+          `
+        )
         .eq("user_id", userId.value)
         .order("date", { ascending: false });
 
       if (err) throw err;
 
-      transactions.value = data ?? [];
+      transactions.value = (data as TransactionWithRelations[]) ?? [];
     } catch (err: any) {
       error.value = err.message || "Unknown error";
     } finally {
@@ -50,7 +75,6 @@ export function useTransactions() {
       if (err) throw err;
 
       const newTransaction = data as Transactions["Row"];
-      transactions.value.unshift(newTransaction);
       return newTransaction;
     } catch (err: any) {
       error.value = err.message || "Unknown error";
@@ -82,11 +106,6 @@ export function useTransactions() {
       if (err) throw err;
 
       const updatedTransaction = data as Transactions["Row"];
-      const index = transactions.value.findIndex((t) => t.id === id);
-      if (index !== -1) {
-        transactions.value[index] = updatedTransaction;
-      }
-
       return updatedTransaction;
     } catch (err: any) {
       error.value = err.message || "Unknown error";
