@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { signOut } = useAuth();
+const { signOut, isLoading } = useAuth();
 </script>
 
 <template>
@@ -13,10 +13,16 @@ const { signOut } = useAuth();
     </div>
     <!-- Card Content -->
     <div class="pt-3">
-      <UiButton class="bg-red-600 border-red-700 text-white" @click="signOut">
-        <UIcon name="i-lucide-log-out" class="size-6" />
-        Sign Out
-      </UiButton>
+      <UButton
+        color="error"
+        variant="solid"
+        icon="i-lucide-log-out"
+        label="Sign Out"
+        size="xl"
+        block
+        :loading="isLoading"
+        @click="signOut"
+      />
     </div>
   </div>
 </template>

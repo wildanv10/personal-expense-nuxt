@@ -3,23 +3,37 @@ export const useAuth = () => {
   const user = useSupabaseUser();
   const userId = computed(() => user.value?.id);
   const isAuthenticated = computed(() => !!user.value);
+  const isLoading = useState("isLoading", () => false);
 
   const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: window.location.origin + "/confirm",
-      },
-    });
-    if (error) {
-      console.error("Google sign-in error:", error);
+    isLoading.value = true;
+
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: window.location.origin + "/confirm",
+        },
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      console.error(err.message);
+    } finally {
+      isLoading.value = false;
     }
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) console.log(error);
-    else navigateTo("/login");
+    isLoading.value = true;
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      else navigateTo("/login");
+    } catch (err: any) {
+      console.error(err.message);
+    } finally {
+      isLoading.value = false;
+    }
   };
 
   return {
@@ -27,6 +41,7 @@ export const useAuth = () => {
     user,
     userId,
     isAuthenticated,
+    isLoading,
     signInWithGoogle,
     signOut,
   };
