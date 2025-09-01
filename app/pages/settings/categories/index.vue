@@ -18,6 +18,10 @@ function selectCategory(id: categoryId) {
   selectedId.value = id;
   navigateTo(`${constants.routes.settings_categories}/${id}`);
 }
+async function onAddCategory() {
+  isDrawerAddOpen.value = false;
+  await getCategories();
+}
 </script>
 
 <template>
@@ -51,5 +55,28 @@ function selectCategory(id: categoryId) {
         <UIcon name="i-lucide-chevron-right" @click="selectCategory(item.id)" />
       </template>
     </SettingsConfigurationCard>
+
+    <!-- Drawer Add -->
+    <UDrawer
+      v-model:open="isDrawerAddOpen"
+      :dismissible="false"
+      :handle="false"
+      :ui="{ header: 'flex items-center justify-between' }"
+    >
+      <template #header>
+        <h2 class="text-highlighted font-semibold">Add Category</h2>
+
+        <UButton
+          color="neutral"
+          variant="ghost"
+          icon="i-lucide-x"
+          @click="isDrawerAddOpen = false"
+        />
+      </template>
+
+      <template #body>
+        <SettingsCategoryAdd class="px-4" @submit="onAddCategory" />
+      </template>
+    </UDrawer>
   </section>
 </template>
