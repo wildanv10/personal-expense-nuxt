@@ -1,5 +1,7 @@
 <template>
-  <footer class="fixed bottom-0 w-full py-4 bg-white border-t border-gray-100">
+  <footer
+    class="sticky bottom-0 w-full py-4 bg-white border border-b-0 border-gray-100"
+  >
     <UiFooterMenuWrapper>
       <UiFooterMenu
         to="/home/transactions"
