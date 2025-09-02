@@ -1,4 +1,5 @@
 import type { SubCategories } from "~/types/database.types";
+import type { SubCategoryData } from "~/types/subCategories";
 
 export function useSubCategories() {
   const client = useSupabaseClient();
@@ -49,6 +50,16 @@ export function useSubCategories() {
     }
 
     return subCategories.value.filter((item) => item.category_id === id);
+  };
+
+  const getSubCategoryById = async (
+    id: number
+  ): Promise<SubCategoryData | undefined> => {
+    if (subCategories.value.length < 1) {
+      await getSubCategories();
+    }
+
+    return subCategories.value.find((data) => data.id === id);
   };
 
   const addSubCategory = async (payload: SubCategories["Insert"]) => {
@@ -137,6 +148,7 @@ export function useSubCategories() {
     error,
     getSubCategories,
     getSubCategoriesByCategoryId,
+    getSubCategoryById,
     addSubCategory,
     updateSubCategory,
     deleteSubCategory,

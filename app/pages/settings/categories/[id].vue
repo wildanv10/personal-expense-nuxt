@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { SubCategories } from "~/types/database.types";
+import type { SubCategoryData } from "~/types/subCategories";
 
 // Composables
 const route = useRoute();
@@ -10,9 +11,7 @@ type ItemID = number | null;
 
 // State
 const categoryId = Number(route.params.id);
-const subCategory = ref<
-  Omit<SubCategories["Row"], "created_at" | "user_id">[] | []
->([]);
+const subCategory = ref<SubCategoryData[] | []>([]);
 const selectedItemID = ref<ItemID>(null);
 const isDrawerAddOpen = ref(false);
 const isDrawerEditOpen = ref(false);
@@ -33,6 +32,14 @@ function selectItem(id: ItemID) {
 async function onAddSubCategory() {
   isDrawerAddOpen.value = false;
   subCategory.value = await getSubCategoriesByCategoryId(categoryId);
+}
+async function onUpdateSubCategory() {
+  onCloseDrawerEdit();
+  subCategory.value = await getSubCategoriesByCategoryId(categoryId);
+}
+async function onCloseDrawerEdit() {
+  isDrawerEditOpen.value = false;
+  selectedItemID.value = null;
 }
 </script>
 
@@ -91,6 +98,34 @@ async function onAddSubCategory() {
 
       <template #body>
         <SettingsSubCategoryAdd class="px-4" @submit="onAddSubCategory" />
+      </template>
+    </UDrawer>
+
+    <!-- Drawer Edit -->
+    <UDrawer
+      v-model:open="isDrawerEditOpen"
+      :dismissible="false"
+      :handle="false"
+      :ui="{ header: 'flex items-center justify-between' }"
+    >
+      <template #header>
+        <h2 class="text-highlighted font-semibold">Edit Category</h2>
+
+        <UButton
+          color="neutral"
+          variant="ghost"
+          icon="i-lucide-x"
+          @click="onCloseDrawerEdit"
+        />
+      </template>
+
+      <template #body>
+        <SettingsSubCategoryEdit
+          class="px-4"
+          :selected-id="selectedItemID"
+          @update="onUpdateSubCategory"
+          @close="onCloseDrawerEdit"
+        />
       </template>
     </UDrawer>
   </section>
