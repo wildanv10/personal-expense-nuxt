@@ -1,3 +1,4 @@
+import type { CategoryData } from "~/types/categories";
 import type { Categories } from "~/types/database.types";
 type CategoryOptions = { key: string; value: string };
 
@@ -5,7 +6,7 @@ export function useCategories() {
   const client = useSupabaseClient();
   const { userId } = useAuth();
   const { getSubCategories, subCategories } = useSubCategories();
-  const categories = useState<Categories["Row"][]>("categories", () => []);
+  const categories = useState<CategoryData[]>("categories", () => []);
   const isCategoryRetrieved = useState("isCategoryRetrieved", () => false);
   const categoryExpenseOptions = useState<CategoryOptions[]>(
     "categoryExpenseOptions",
@@ -36,7 +37,7 @@ export function useCategories() {
 
       if (err) throw err;
 
-      categories.value = data as Categories["Row"][];
+      categories.value = data as CategoryData[];
       isCategoryRetrieved.value = true;
     } catch (err: any) {
       error.value = err.message || "Unknown error";
@@ -74,6 +75,16 @@ export function useCategories() {
         });
       }
     }
+  };
+
+  const getCategoryById = async (
+    id: number
+  ): Promise<CategoryData | undefined> => {
+    if (categories.value.length < 1) {
+      await getCategories();
+    }
+
+    return categories.value.find((pm) => pm.id === id);
   };
 
   const addCategory = async (payload: Categories["Insert"]) => {
@@ -163,6 +174,7 @@ export function useCategories() {
     loading,
     error,
     getCategories,
+    getCategoryById,
     getCategoryOptions,
     addCategory,
     updateCategory,

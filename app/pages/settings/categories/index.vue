@@ -8,6 +8,7 @@ type categoryId = number | null;
 // State
 const selectedId = ref<categoryId>(null);
 const isDrawerAddOpen = ref(false);
+const isDrawerEditOpen = ref(false);
 
 onMounted(async () => {
   await getCategories();
@@ -16,11 +17,22 @@ onMounted(async () => {
 // Methods
 function selectCategory(id: categoryId) {
   selectedId.value = id;
+  isDrawerEditOpen.value = true;
+}
+function openSubCategory(id: categoryId) {
   navigateTo(`${constants.routes.settings_categories}/${id}`);
 }
 async function onAddCategory() {
   isDrawerAddOpen.value = false;
   await getCategories();
+}
+async function onUpdateCategory() {
+  onCloseDrawerEdit();
+  await getCategories();
+}
+async function onCloseDrawerEdit() {
+  isDrawerEditOpen.value = false;
+  selectedId.value = null;
 }
 </script>
 
@@ -52,7 +64,17 @@ async function onAddCategory() {
             {{ item.name }}
           </p>
         </div>
-        <UIcon name="i-lucide-chevron-right" @click="selectCategory(item.id)" />
+        <span class="flex items-center gap-1">
+          <UIcon
+            name="i-lucide-ellipsis-vertical"
+            @click="selectCategory(item.id)"
+          />
+          <USeparator orientation="vertical" class="h-3" />
+          <UIcon
+            name="i-lucide-chevron-right"
+            @click="openSubCategory(item.id)"
+          />
+        </span>
       </template>
     </SettingsConfigurationCard>
 
@@ -76,6 +98,34 @@ async function onAddCategory() {
 
       <template #body>
         <SettingsCategoryAdd class="px-4" @submit="onAddCategory" />
+      </template>
+    </UDrawer>
+
+    <!-- Drawer Edit -->
+    <UDrawer
+      v-model:open="isDrawerEditOpen"
+      :dismissible="false"
+      :handle="false"
+      :ui="{ header: 'flex items-center justify-between' }"
+    >
+      <template #header>
+        <h2 class="text-highlighted font-semibold">Edit Category</h2>
+
+        <UButton
+          color="neutral"
+          variant="ghost"
+          icon="i-lucide-x"
+          @click="onCloseDrawerEdit"
+        />
+      </template>
+
+      <template #body>
+        <SettingsCategoryEdit
+          class="px-4"
+          :selected-id="selectedId"
+          @update="onUpdateCategory"
+          @close="onCloseDrawerEdit"
+        />
       </template>
     </UDrawer>
   </section>
