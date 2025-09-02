@@ -1,10 +1,15 @@
 <script setup lang="ts">
 const { getTransactions, transactions } = useTransactions();
+const { selectedMonth, selectedYear } = usePeriod();
 
 // State
 const summary = computed(() => calculateTransactionSummary(transactions.value));
 
 onMounted(async () => {
+  await getTransactions();
+});
+
+watch([selectedMonth, selectedYear], async ([newMonth, newYear]) => {
   await getTransactions();
 });
 </script>
@@ -13,6 +18,7 @@ onMounted(async () => {
   <div>
     <NuxtLayout name="default">
       <div>
+        <!-- Summary -->
         <div
           class="w-vw bg-primary -mx-2 -mt-3 z-10 mb-0 pt-2 px-4 pb-8 rounded-b-4xl"
         >
@@ -63,6 +69,9 @@ onMounted(async () => {
             </div>
           </div>
         </div>
+
+        <!-- Period Picker -->
+        <HomePeriodSelector />
 
         <!-- Child Page -->
         <slot />
