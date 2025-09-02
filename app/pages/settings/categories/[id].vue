@@ -3,7 +3,7 @@ import type { SubCategories } from "~/types/database.types";
 
 // Composables
 const route = useRoute();
-const { getSubCategoryByCategoryId } = useSubCategories();
+const { getSubCategoriesByCategoryId } = useSubCategories();
 
 // Types
 type ItemID = number | null;
@@ -22,7 +22,7 @@ if (isNaN(categoryId)) {
 }
 
 onMounted(async () => {
-  subCategory.value = await getSubCategoryByCategoryId(categoryId);
+  subCategory.value = await getSubCategoriesByCategoryId(categoryId);
 });
 
 // Methods
@@ -32,7 +32,7 @@ function selectItem(id: ItemID) {
 }
 async function onAddSubCategory() {
   isDrawerAddOpen.value = false;
-  subCategory.value = await getSubCategoryByCategoryId(categoryId);
+  subCategory.value = await getSubCategoriesByCategoryId(categoryId);
 }
 </script>
 

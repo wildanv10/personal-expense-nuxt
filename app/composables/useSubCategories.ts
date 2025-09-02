@@ -41,7 +41,7 @@ export function useSubCategories() {
     }
   };
 
-  const getSubCategoryByCategoryId = async (
+  const getSubCategoriesByCategoryId = async (
     id: number
   ): Promise<Omit<SubCategories["Row"], "created_at" | "user_id">[] | []> => {
     if (subCategories.value.length < 1) {
@@ -136,7 +136,7 @@ export function useSubCategories() {
     loading,
     error,
     getSubCategories,
-    getSubCategoryByCategoryId,
+    getSubCategoriesByCategoryId,
     addSubCategory,
     updateSubCategory,
     deleteSubCategory,
