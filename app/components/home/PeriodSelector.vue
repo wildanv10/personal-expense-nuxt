@@ -2,37 +2,57 @@
 const {
   selectedMonth,
   selectedYear,
+  currentMonth,
   currentYear,
   monthNames,
   isFutureMonth,
-  previousYear,
-  nextYear,
   selectMonth,
 } = usePeriod();
 
+// State
 const isPeriodPopupOpen = ref(false);
+const activeYear = ref(selectedYear.value);
 
-function onSelectMonth(index: number) {
-  isPeriodPopupOpen.value = false;
-  selectMonth(index);
+// Methods
+function previousYear() {
+  activeYear.value--;
+}
+function nextYear() {
+  if (activeYear.value < currentYear) {
+    activeYear.value++;
+  }
+}
+function onSelectMonth(monthIndex: number) {
+  if (!isFutureMonth(monthIndex, activeYear.value)) {
+    selectMonth(monthIndex, activeYear.value);
+    isPeriodPopupOpen.value = false;
+  }
+}
+function onToggle(isOpen: boolean) {
+  if (!isOpen) {
+    setTimeout(() => {
+      activeYear.value = selectedYear.value;
+    }, 300);
+  }
 }
 </script>
 
 <template>
-  <section class="relative my-3">
+  <section class="relative my-2">
     <UPopover
       v-model:open="isPeriodPopupOpen"
       :content="{
         sideOffset: 0,
         collisionPadding: 0,
       }"
+      @update:open="onToggle"
     >
       <UButton
         color="neutral"
         variant="ghost"
-        size="xl"
+        size="lg"
         block
-        class="rounded-2xl text-xl py-3"
+        class="rounded-2xl text-md font-bold py-3"
       >
         {{ monthNames[selectedMonth] }} {{ selectedYear }}
       </UButton>
@@ -47,14 +67,14 @@ function onSelectMonth(index: number) {
               variant="ghost"
               @click="previousYear"
             />
-            <div class="text-lg font-semibold">
-              {{ selectedYear }}
+            <div class="text-md font-semibold">
+              {{ activeYear }}
             </div>
             <UButton
               icon="lucide:chevron-right"
               color="neutral"
               variant="ghost"
-              :disabled="selectedYear >= currentYear"
+              :disabled="activeYear >= currentYear"
               class="disabled:text-gray-400"
               @click="nextYear"
             />
@@ -65,14 +85,12 @@ function onSelectMonth(index: number) {
             <button
               v-for="(month, index) in monthNames"
               :key="index"
-              :disabled="isFutureMonth(index)"
+              :disabled="isFutureMonth(index, activeYear)"
               @click="onSelectMonth(index)"
               class="p-2 rounded text-sm font-medium transition-all hover:bg-primary hover:text-green-950 disabled:text-gray-400 disabled:cursor-not-allowed disabled:hover:bg-white"
               :class="{
-                'bg-lime-500 text-green-950':
-                  index === selectedMonth && selectedYear === currentYear,
-                'bg-gray-100':
-                  index === selectedMonth && selectedYear !== currentYear,
+                'bg-primary text-green-950':
+                  index === selectedMonth && selectedYear === activeYear,
               }"
             >
               {{ month }}

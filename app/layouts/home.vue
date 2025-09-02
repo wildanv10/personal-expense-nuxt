@@ -20,7 +20,7 @@ watch([selectedMonth, selectedYear], async ([newMonth, newYear]) => {
       <div>
         <!-- Summary -->
         <div
-          class="w-vw bg-primary -mx-2 -mt-3 z-10 mb-0 pt-2 px-4 pb-8 rounded-b-4xl"
+          class="w-vw bg-primary -mx-2 -mt-3 z-10 mb-0 pt-2 px-4 py-5 rounded-b-4xl"
         >
           <!-- Balance -->
           <div class="relative mb-4 text-green-900">

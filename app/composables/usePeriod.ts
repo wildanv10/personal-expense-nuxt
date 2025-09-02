@@ -12,26 +12,16 @@ export const usePeriod = () => {
     )
   );
 
-  const isFutureMonth = (monthIndex: number) => {
+  const isFutureMonth = (monthIndex: number, year = selectedYear.value) => {
     return (
-      selectedYear.value > currentYear ||
-      (selectedYear.value === currentYear && monthIndex > currentMonth)
+      year > currentYear || (year === currentYear && monthIndex > currentMonth)
     );
   };
 
-  const previousYear = () => {
-    selectedYear.value--;
-  };
-
-  const nextYear = () => {
-    if (selectedYear.value < currentYear) {
-      selectedYear.value++;
-    }
-  };
-
-  const selectMonth = (monthIndex: number) => {
-    if (!isFutureMonth(monthIndex)) {
+  const selectMonth = (monthIndex: number, year: number) => {
+    if (!isFutureMonth(monthIndex, year)) {
       selectedMonth.value = monthIndex;
+      selectedYear.value = year;
     }
   };
 
@@ -42,8 +32,6 @@ export const usePeriod = () => {
     currentYear,
     monthNames,
     isFutureMonth,
-    previousYear,
-    nextYear,
     selectMonth,
   };
 };
