@@ -1,47 +1,57 @@
 <script setup lang="ts">
+import type { SubCategories } from "~/types/database.types";
+import type { SubCategoryData } from "~/types/subCategories";
+
 // Composables
-const { getCategories, categories, loading, error } = useCategories();
+const route = useRoute();
+const { getSubCategoriesByCategoryId } = useSubCategories();
 
 // Types
-type categoryId = number | null;
+type ItemID = number | null;
 
 // State
-const selectedId = ref<categoryId>(null);
+const categoryId = Number(route.params.id);
+const subCategory = ref<SubCategoryData[] | []>([]);
+const selectedItemID = ref<ItemID>(null);
 const isDrawerAddOpen = ref(false);
 const isDrawerEditOpen = ref(false);
 
+if (isNaN(categoryId)) {
+  throw new Error("Invalid category ID in route parameter.");
+}
+
 onMounted(async () => {
-  await getCategories();
+  subCategory.value = await getSubCategoriesByCategoryId(categoryId);
 });
 
 // Methods
-function selectCategory(id: categoryId) {
-  selectedId.value = id;
+function selectItem(id: ItemID) {
+  selectedItemID.value = id;
   isDrawerEditOpen.value = true;
 }
-function openSubCategory(id: categoryId) {
-  navigateTo(`${constants.routes.settings_categories}/${id}`);
-}
-async function onAddCategory() {
+async function onAddSubCategory() {
   isDrawerAddOpen.value = false;
-  await getCategories();
+  subCategory.value = await getSubCategoriesByCategoryId(categoryId);
 }
-async function onUpdateCategory() {
+async function onUpdateSubCategory() {
   onCloseDrawerEdit();
-  await getCategories();
+  subCategory.value = await getSubCategoriesByCategoryId(categoryId);
 }
 async function onCloseDrawerEdit() {
   isDrawerEditOpen.value = false;
-  selectedId.value = null;
+  selectedItemID.value = null;
 }
 </script>
 
 <template>
   <section>
-    <SettingsConfigurationCard :items="categories" :selected-item="selectedId">
+    <SettingsConfigurationCard
+      :items="subCategory"
+      :selected-item="selectedItemID"
+    >
       <template #header>
-        <UIcon name="i-lucide-box" class="size-6" />
-        Categories
+        <UIcon name="i-lucide-boxes" class="size-6" />
+        Sub Categories
       </template>
 
       <template #content-add>
@@ -53,7 +63,7 @@ async function onCloseDrawerEdit() {
           block
           @click="isDrawerAddOpen = true"
         >
-          Add Category
+          Add Sub Category
         </UButton>
       </template>
 
@@ -64,17 +74,7 @@ async function onCloseDrawerEdit() {
             {{ item.name }}
           </p>
         </div>
-        <span class="flex items-center gap-1">
-          <UIcon
-            name="i-lucide-ellipsis-vertical"
-            @click="selectCategory(item.id)"
-          />
-          <USeparator orientation="vertical" class="h-3" />
-          <UIcon
-            name="i-lucide-chevron-right"
-            @click="openSubCategory(item.id)"
-          />
-        </span>
+        <UIcon name="i-lucide-ellipsis-vertical" @click="selectItem(item.id)" />
       </template>
     </SettingsConfigurationCard>
 
@@ -97,7 +97,7 @@ async function onCloseDrawerEdit() {
       </template>
 
       <template #body>
-        <SettingsCategoryAdd class="px-4" @submit="onAddCategory" />
+        <SettingsSubCategoryAdd class="px-4" @submit="onAddSubCategory" />
       </template>
     </UDrawer>
 
@@ -120,10 +120,10 @@ async function onCloseDrawerEdit() {
       </template>
 
       <template #body>
-        <SettingsCategoryEdit
+        <SettingsSubCategoryEdit
           class="px-4"
-          :selected-id="selectedId"
-          @update="onUpdateCategory"
+          :selected-id="selectedItemID"
+          @update="onUpdateSubCategory"
           @close="onCloseDrawerEdit"
         />
       </template>

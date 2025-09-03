@@ -39,50 +39,38 @@ async function onCloseDrawerEdit() {
 
 <template>
   <section>
-    <div class="card">
-      <!-- Card Title -->
-      <div>
-        <div class="flex items-center gap-2 text-lg font-heading">
-          <UIcon name="i-lucide-hand-coins" class="size-6" />
-          Payment Methods
-        </div>
-      </div>
+    <SettingsConfigurationCard
+      :items="paymentMethods"
+      :selected-item="selectedPM"
+    >
+      <template #header>
+        <UIcon name="i-lucide-hand-coins" class="size-6" />
+        Payment Methods
+      </template>
 
-      <!-- Card Content -->
-      <div class="card-content pt-6">
-        <div class="payment-method-add mb-3">
-          <UButton
-            icon="i-lucide-plus"
-            size="lg"
-            color="neutral"
-            variant="outline"
-            block
-            @click="isDrawerAddOpen = true"
-          >
-            Add Payment Method
-          </UButton>
-        </div>
+      <template #content-add>
+        <UButton
+          icon="i-lucide-plus"
+          size="lg"
+          color="neutral"
+          variant="outline"
+          block
+          @click="isDrawerAddOpen = true"
+        >
+          Add Payment Method
+        </UButton>
+      </template>
 
-        <div class="payment-method-list">
-          <div
-            class="payment-method-item flex items-center gap-2 py-1 px-2 border border-transparent"
-            :class="{
-              '!border-gray-200 shadow-xs rounded-lg': isActive(pm.id),
-            }"
-            v-for="pm in paymentMethods"
-            :key="`pm-${pm.id}`"
-          >
-            <UIcon :name="`i-lucide-${pm.icon}`" />
-            <div class="payment-method-name grow">
-              <p>
-                {{ pm.name }}
-              </p>
-            </div>
-            <UIcon name="i-lucide-ellipsis-vertical" @click="selectPM(pm.id)" />
-          </div>
+      <template #content-list="item">
+        <UIcon :name="`i-lucide-${item.icon}`" />
+        <div class="payment-method-name grow">
+          <p>
+            {{ item.name }}
+          </p>
         </div>
-      </div>
-    </div>
+        <UIcon name="i-lucide-ellipsis-vertical" @click="selectPM(item.id)" />
+      </template>
+    </SettingsConfigurationCard>
 
     <!-- Drawer Add -->
     <UDrawer

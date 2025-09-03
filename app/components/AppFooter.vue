@@ -1,29 +1,23 @@
 <template>
   <footer
-    class="fixed bottom-0 w-full py-2 bg-white border-t border-(--border-color)"
+    class="sticky bottom-0 w-full py-4 bg-white border border-b-0 border-gray-100"
   >
-    <nav>
-      <ul class="flex justify-center">
-        <li class="">
-          <NuxtLink to="/home/transactions" class="flex items-center py-3 px-5">
-            <UIcon name="i-lucide-house" class="size-6" />
-
-            <p class="text-lg ml-2">Home</p>
-          </NuxtLink>
-        </li>
-        <li class="">
-          <NuxtLink to="/statistics" class="flex items-center py-3 px-5">
-            <UIcon name="i-lucide-chart-line" class="size-6" />
-            <p class="text-lg ml-2">Statistics</p>
-          </NuxtLink>
-        </li>
-        <li class="">
-          <NuxtLink to="/settings" class="flex items-center py-3 px-5">
-            <UIcon name="i-lucide-user-cog" class="size-6" />
-            <p class="text-lg ml-2">Settings</p>
-          </NuxtLink>
-        </li>
-      </ul>
-    </nav>
+    <UiFooterMenuWrapper>
+      <UiFooterMenu
+        to="/home/transactions"
+        menu-text="Home"
+        menu-icon="i-lucide-house"
+      />
+      <UiFooterMenu
+        to="/statistics"
+        menu-text="Statistics"
+        menu-icon="i-lucide-chart-line"
+      />
+      <UiFooterMenu
+        to="/settings"
+        menu-text="Settings"
+        menu-icon="i-lucide-user-cog"
+      />
+    </UiFooterMenuWrapper>
   </footer>
 </template>

@@ -1,10 +1,17 @@
 <script setup lang="ts">
-const { signInWithGoogle } = useAuth();
+const { signInWithGoogle, isLoading } = useAuth();
 </script>
 
 <template>
-  <UiButton class="bg-white border-neutral-200" @click="signInWithGoogle">
-    <UIcon name="i-lucide-log-in" class="size-6" />
-    Sign in with Google
-  </UiButton>
+  <UButton
+    color="neutral"
+    variant="outline"
+    size="xl"
+    block
+    :loading="isLoading"
+    @click="signInWithGoogle"
+  >
+    <IconGoogle v-if="isLoading !== true" />
+    Continue with Google
+  </UButton>
 </template>

@@ -4,6 +4,7 @@ import type { TransactionWithRelations } from "~/types/transactions";
 export function useTransactions() {
   const client = useSupabaseClient();
   const { userId } = useAuth();
+  const { selectedMonth, selectedYear } = usePeriod();
   const transactions = useState<TransactionWithRelations[]>(
     "transactions",
     () => []
@@ -19,6 +20,15 @@ export function useTransactions() {
       if (!userId.value) {
         throw new Error("User not authenticated");
       }
+
+      // Set StartDate and EndDate based on selectedMonth and selectedYear
+      const year = selectedYear.value;
+      const month = selectedMonth.value + 1;
+      const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
+      const end = new Date(year, month, 0);
+      const endDate = `${year}-${String(month).padStart(2, "0")}-${String(
+        end.getDate()
+      ).padStart(2, "0")}`;
 
       const { data, error: err } = await client
         .from("transactions")
@@ -48,6 +58,8 @@ export function useTransactions() {
           `
         )
         .eq("user_id", userId.value)
+        .gte("date", startDate)
+        .lte("date", endDate)
         .order("date", { ascending: false });
 
       if (err) throw err;

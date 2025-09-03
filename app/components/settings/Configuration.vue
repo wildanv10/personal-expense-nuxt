@@ -19,7 +19,7 @@
       </div>
       <div class="card-list">
         <NuxtLink :to="constants.routes.settings_payment_methods">
-          <div class="py-3 flex justify-between items-center">
+          <div class="pt-3 flex justify-between items-center">
             <p>Payment Methods</p>
             <UIcon name="i-lucide-chevron-right" class="size-5" />
           </div>
