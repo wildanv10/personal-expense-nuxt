@@ -35,24 +35,29 @@ definePageMeta({
               />
             </div>
             <div>
-              <p class="font-semibold text-gray-800">
+              <p
+                class="font-semibold text-gray-800"
+                :class="{
+                  'text-lime-600': transaction.type === constants.income,
+                }"
+              >
                 {{ transaction.sub_categories?.name }}
               </p>
               <p class="text-xs text-gray-500">
-                {{ transaction.description }}
+                {{ transaction.categories?.name }}
+                {{
+                  transaction.description ? `| ${transaction.description}` : ""
+                }}
               </p>
             </div>
           </div>
           <div class="text-right">
             <p
-              class="font-semibold text-gray-900"
+              class="font-semibold text-gray-800"
               :class="{
-                'text-red-500': transaction.type === constants.expense,
-                'text-green-600': transaction.type === constants.income,
+                'text-lime-600': transaction.type === constants.income,
               }"
             >
-              <span v-if="transaction.type === constants.expense">-</span>
-              <span v-else-if="transaction.type === constants.income">+</span>
               {{ formatWithThousandSeparator(transaction.amount) }}
             </p>
             <p class="text-xs text-gray-500">&nbsp;</p>
