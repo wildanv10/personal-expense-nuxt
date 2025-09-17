@@ -133,91 +133,97 @@ watch(transactionType, () => {
 </script>
 
 <template>
-  <div class="card">
-    <!-- Card Title -->
-    <div>
-      <div class="flex items-center gap-2 text-lg font-heading">
-        <UIcon name="i-lucide-settings-2" class="size-6" />
-        Add Transaction
+  <section class="flex flex-col gap-3">
+    <div class="card">
+      <!-- Card Title -->
+      <div>
+        <div class="flex items-center gap-2 text-lg font-heading">
+          <UIcon name="i-lucide-settings-2" class="size-6" />
+          Add Transaction
+        </div>
       </div>
-    </div>
 
-    <!-- Card Content -->
-    <UForm :state="form" class="mt-3 space-y-4" @submit.prevent="handleSubmit">
-      <UTabs
-        v-model="form.type"
-        :items="transactionTypes"
-        class="w-full mb-7"
-        size="lg"
-      />
-
-      <UFormField name="date">
-        <UInput
-          type="date"
-          v-model="form.date"
-          icon="i-lucide-calendar"
-          class="w-full"
-          size="xl"
-        />
-      </UFormField>
-
-      <UFormField name="amount">
-        <UInput
-          :value="formattedAmount"
-          @input="onAmountInput"
-          @keypress="onAmountKeyPress"
-          placeholder="Amount"
-          required
-          class="w-full"
-          size="xl"
-          autofocus
-        />
-      </UFormField>
-
-      <UFormField name="category_id">
-        <USelectMenu
-          v-model="form.category_id"
-          :items="categoryOptions"
-          value-key="key"
-          label-key="value"
-          placeholder="Select Category"
-          class="w-full"
-          size="xl"
-        />
-      </UFormField>
-
-      <UFormField name="payment_method_id">
-        <USelectMenu
-          v-model="form.payment_method_id"
-          :items="paymentMethodOptions"
-          value-key="key"
-          label-key="value"
-          placeholder="Select a payment method"
-          class="w-full"
-          size="xl"
-        />
-      </UFormField>
-
-      <UFormField name="description">
-        <UTextarea
-          v-model="form.description"
-          placeholder="Add a note"
-          :rows="3"
-          class="w-full"
-          size="xl"
-        />
-      </UFormField>
-
-      <UButton
-        type="submit"
-        :loading="loading"
-        color="primary"
-        variant="solid"
-        block
-        size="xl"
+      <!-- Card Content -->
+      <UForm
+        :state="form"
+        class="mt-3 space-y-4"
+        @submit.prevent="handleSubmit"
       >
-        {{ loading ? "Adding..." : "Add Transaction" }}
-      </UButton>
-    </UForm>
-  </div>
+        <UTabs
+          v-model="form.type"
+          :items="transactionTypes"
+          class="w-full mb-7"
+          size="lg"
+        />
+
+        <UFormField name="date">
+          <UInput
+            type="date"
+            v-model="form.date"
+            icon="i-lucide-calendar"
+            class="w-full"
+            size="xl"
+          />
+        </UFormField>
+
+        <UFormField name="amount">
+          <UInput
+            :value="formattedAmount"
+            @input="onAmountInput"
+            @keypress="onAmountKeyPress"
+            placeholder="Amount"
+            required
+            class="w-full"
+            size="xl"
+            autofocus
+          />
+        </UFormField>
+
+        <UFormField name="category_id">
+          <USelectMenu
+            v-model="form.category_id"
+            :items="categoryOptions"
+            value-key="key"
+            label-key="value"
+            placeholder="Select Category"
+            class="w-full"
+            size="xl"
+          />
+        </UFormField>
+
+        <UFormField name="payment_method_id">
+          <USelectMenu
+            v-model="form.payment_method_id"
+            :items="paymentMethodOptions"
+            value-key="key"
+            label-key="value"
+            placeholder="Select a payment method"
+            class="w-full"
+            size="xl"
+          />
+        </UFormField>
+
+        <UFormField name="description">
+          <UTextarea
+            v-model="form.description"
+            placeholder="Add a note"
+            :rows="3"
+            class="w-full"
+            size="xl"
+          />
+        </UFormField>
+
+        <UButton
+          type="submit"
+          :loading="loading"
+          color="primary"
+          variant="solid"
+          block
+          size="xl"
+        >
+          {{ loading ? "Adding..." : "Add Transaction" }}
+        </UButton>
+      </UForm>
+    </div>
+  </section>
 </template>

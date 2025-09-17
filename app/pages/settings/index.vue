@@ -1,5 +1,5 @@
 <template>
-  <section class="flex flex-col gap-3 pt-2">
+  <section class="flex flex-col gap-3">
     <SettingsConfiguration />
 
     <SettingsSecurity />

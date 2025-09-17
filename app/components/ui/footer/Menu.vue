@@ -18,10 +18,9 @@ const isActive = computed(() => {
   <li>
     <NuxtLink
       :to="props.to"
-      class="flex items-center border-b-2 transition-bor duration-300 ease-in-out"
+      class="flex items-center transition-bor duration-300 ease-in-out"
       :class="{
-        'border-transparent': !isActive,
-        'border-primary': isActive,
+        'text-lime-700': isActive,
       }"
     >
       <UIcon :name="props.menuIcon" size="16" />
