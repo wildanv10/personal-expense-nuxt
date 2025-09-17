@@ -3,10 +3,11 @@ import type { Enums, Transactions } from "~/types/database.types";
 import { useTransactions } from "~/composables/useTransactions";
 import { usePaymentMethods } from "~/composables/usePaymentMethods";
 
-const { addTransaction } = useTransactions();
+const { addTransaction, error } = useTransactions();
 const { getCategoryOptions, categoryExpenseOptions, categoryIncomeOptions } =
   useCategories();
 const { getPaymentMethods, paymentMethodOptions } = usePaymentMethods();
+const toast = useToast();
 
 // State
 const form = ref({
@@ -58,8 +59,21 @@ const handleSubmit = async () => {
     await addTransaction(getTransactionPayload());
     clearForm();
 
+    toast.add({
+      title: "Success",
+      description: "The Transaction has been added.",
+      color: "success",
+    });
+
     navigateTo("/home/transactions");
-  } catch (error: any) {
+  } catch (err: any) {
+    console.error(err.message || error);
+
+    toast.add({
+      title: "Error",
+      description: err.message || error,
+      color: "error",
+    });
   } finally {
     loading.value = false;
   }
