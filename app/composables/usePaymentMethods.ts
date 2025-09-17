@@ -36,6 +36,13 @@ export function usePaymentMethods() {
     }
   };
 
+  const paymentMethodOptions = computed(() =>
+    paymentMethods.value.map((pm) => ({
+      key: pm.id.toString(),
+      value: pm.name,
+    }))
+  );
+
   const getPaymentMethodById = async (
     id: number
   ): Promise<PaymentMethods["Row"] | undefined> => {
@@ -124,6 +131,7 @@ export function usePaymentMethods() {
     loadingDelete,
     error,
     getPaymentMethods,
+    paymentMethodOptions,
     getPaymentMethodById,
     addPaymentMethod,
     updatePaymentMethod,
