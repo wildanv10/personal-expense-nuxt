@@ -90,6 +90,21 @@ const clearForm = () => {
   };
 };
 
+function onAmountInput(e: Event) {
+  const input = (e.target as HTMLInputElement).value;
+  // Strip non-numeric characters
+  const cleanedInput = input.replace(/\D/g, "");
+  form.value.amount = cleanedInput ? parseInt(cleanedInput, 10) : null;
+}
+
+function onAmountKeyPress(e: KeyboardEvent) {
+  // Allow only digits
+  const char = e.key;
+  if (!/[0-9]/.test(char)) {
+    e.preventDefault();
+  }
+}
+
 // Computed
 const categoryOptions = computed(() => {
   return form.value.type === "expense"
@@ -98,6 +113,18 @@ const categoryOptions = computed(() => {
 });
 
 const transactionType = computed(() => form.value.type);
+
+const formattedAmount = computed(() => {
+  if (
+    form.value.amount === null ||
+    form.value.amount === undefined ||
+    isNaN(form.value.amount)
+  ) {
+    return "";
+  }
+  // Format with dot as thousands separator
+  return form.value.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+});
 
 // Watcher
 watch(transactionType, () => {
@@ -136,7 +163,9 @@ watch(transactionType, () => {
 
       <UFormField name="amount">
         <UInput
-          v-model.number="form.amount"
+          :value="formattedAmount"
+          @input="onAmountInput"
+          @keypress="onAmountKeyPress"
           placeholder="Amount"
           required
           class="w-full"
