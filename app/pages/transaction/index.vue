@@ -124,6 +124,16 @@ watch(transactionType, () => {
         size="lg"
       />
 
+      <UFormField name="date">
+        <UInput
+          type="date"
+          v-model="form.date"
+          icon="i-lucide-calendar"
+          class="w-full"
+          size="xl"
+        />
+      </UFormField>
+
       <UFormField name="amount">
         <UInput
           v-model.number="form.amount"
@@ -131,6 +141,7 @@ watch(transactionType, () => {
           required
           class="w-full"
           size="xl"
+          autofocus
         />
       </UFormField>
 
@@ -153,16 +164,6 @@ watch(transactionType, () => {
           value-key="key"
           label-key="value"
           placeholder="Select a payment method"
-          class="w-full"
-          size="xl"
-        />
-      </UFormField>
-
-      <UFormField name="date">
-        <UInput
-          type="date"
-          v-model="form.date"
-          icon="i-lucide-calendar"
           class="w-full"
           size="xl"
         />
