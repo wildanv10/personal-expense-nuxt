@@ -9,7 +9,7 @@ definePageMeta({
 });
 
 // Composables
-const { getTransactionById, addTransaction, error } = useTransactions();
+const { getTransactionById, updateTransaction, error } = useTransactions();
 const { getCategoryOptions, categoryExpenseOptions, categoryIncomeOptions } =
   useCategories();
 const { getPaymentMethods, paymentMethodOptions } = usePaymentMethods();
@@ -76,7 +76,7 @@ async function fetchTransaction() {
     }
   }
 }
-const getTransactionPayload = (): Transactions["Insert"] => {
+const getTransactionPayload = (): Transactions["Update"] => {
   const formData = form.value;
 
   const [categoryIdStr, subCategoryIdStr] = formData.category_id
@@ -90,11 +90,13 @@ const getTransactionPayload = (): Transactions["Insert"] => {
     : null;
 
   return {
-    ...formData,
     type: formData.type,
+    amount: formData.amount,
     category_id: categoryId,
     sub_category_id: subCategoryId,
     payment_method_id: paymentMethodId,
+    description: formData.description,
+    date: formData.date,
   };
 };
 
@@ -102,12 +104,13 @@ const handleSubmit = async () => {
   loading.value = true;
 
   try {
-    await addTransaction(getTransactionPayload());
-    clearForm();
+    const idParam = route.params.id;
+    if (!idParam) throw new Error("Transaction ID not found in route.");
+    await updateTransaction(Number(idParam), getTransactionPayload());
 
     toast.add({
       title: "Success",
-      description: "The Transaction has been added.",
+      description: "The Transaction has been updated.",
       color: "success",
     });
 
