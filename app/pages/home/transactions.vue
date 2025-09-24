@@ -4,6 +4,11 @@ const { transactions, loading, error } = useTransactions();
 definePageMeta({
   layout: "home",
 });
+
+// Methods
+function selectTransaction(id: number) {
+  navigateTo(`${constants.routes.transaction}/${id}`);
+}
 </script>
 
 <template>
@@ -23,6 +28,7 @@ definePageMeta({
           class="flex items-center justify-between gap-3"
           v-for="transaction in date"
           :key="transaction.id"
+          @click="selectTransaction(transaction.id)"
         >
           <div class="flex items-center space-x-4">
             <div
