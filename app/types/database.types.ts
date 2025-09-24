@@ -41,41 +41,30 @@ export type Database = {
     Tables: {
       budgets: {
         Row: {
-          amount: number;
+          budget: Json;
           created_at: string | null;
-          id: number;
+          id: string;
           month: number;
-          sub_category_id: number | null;
-          user_id: string | null;
+          user_id: string;
           year: number;
         };
         Insert: {
-          amount: number;
+          budget: Json;
           created_at?: string | null;
-          id?: number;
+          id?: string;
           month: number;
-          sub_category_id?: number | null;
-          user_id?: string | null;
+          user_id: string;
           year: number;
         };
         Update: {
-          amount?: number;
+          budget?: Json;
           created_at?: string | null;
-          id?: number;
+          id?: string;
           month?: number;
-          sub_category_id?: number | null;
-          user_id?: string | null;
+          user_id?: string;
           year?: number;
         };
-        Relationships: [
-          {
-            foreignKeyName: "budgets_sub_category_id_fkey";
-            columns: ["sub_category_id"];
-            isOneToOne: false;
-            referencedRelation: "sub_categories";
-            referencedColumns: ["id"];
-          }
-        ];
+        Relationships: [];
       };
       categories: {
         Row: {

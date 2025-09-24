@@ -3,3 +3,5 @@ onMounted(() => {
   navigateTo("/home/transactions");
 });
 </script>
+
+<template></template>

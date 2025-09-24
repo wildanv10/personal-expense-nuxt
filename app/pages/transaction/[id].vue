@@ -3,7 +3,13 @@ import type { Enums, Transactions } from "~/types/database.types";
 import { useTransactions } from "~/composables/useTransactions";
 import { usePaymentMethods } from "~/composables/usePaymentMethods";
 
-const { addTransaction, error } = useTransactions();
+// Meta
+definePageMeta({
+  middleware: "validate-transaction",
+});
+
+// Composables
+const { getTransactionById, updateTransaction, error } = useTransactions();
 const { getCategoryOptions, categoryExpenseOptions, categoryIncomeOptions } =
   useCategories();
 const { getPaymentMethods, paymentMethodOptions } = usePaymentMethods();
@@ -18,6 +24,8 @@ const form = ref({
   description: "",
   date: new Date().toISOString().substring(0, 10),
 });
+
+const route = useRoute();
 const loading = ref(false);
 const transactionTypes = [
   { value: "expense", label: "Expense" },
@@ -27,10 +35,48 @@ const transactionTypes = [
 // Mounted
 onMounted(async () => {
   await Promise.all([getCategoryOptions(), getPaymentMethods()]);
+  fetchTransaction();
 });
 
 // Methods
-const getTransactionPayload = (): Transactions["Insert"] => {
+async function fetchTransaction() {
+  // Fetch transaction by ID from route params and populate form
+  const idParam = route.params.id;
+  if (idParam) {
+    try {
+      const transaction = await getTransactionById(Number(idParam));
+      if (transaction) {
+        // Compose category_id as "categoryId-subCategoryId" if both exist
+        let categoryKey = undefined;
+        if (transaction.categories?.id && transaction.sub_categories?.id) {
+          categoryKey = `${transaction.categories.id}-${transaction.sub_categories.id}`;
+        } else if (transaction.categories?.id) {
+          categoryKey = `${transaction.categories.id}`;
+        }
+
+        form.value = {
+          type: transaction.type,
+          amount: transaction.amount,
+          category_id: categoryKey,
+          payment_method_id: transaction.payment_methods?.id
+            ? String(transaction.payment_methods.id)
+            : undefined,
+          description: transaction.description || "",
+          date: transaction.date
+            ? transaction.date.substring(0, 10)
+            : new Date().toISOString().substring(0, 10),
+        };
+      }
+    } catch (err: any) {
+      toast.add({
+        title: "Error",
+        description: err.message || "Failed to fetch transaction data.",
+        color: "error",
+      });
+    }
+  }
+}
+const getTransactionPayload = (): Transactions["Update"] => {
   const formData = form.value;
 
   const [categoryIdStr, subCategoryIdStr] = formData.category_id
@@ -44,11 +90,13 @@ const getTransactionPayload = (): Transactions["Insert"] => {
     : null;
 
   return {
-    ...formData,
     type: formData.type,
+    amount: formData.amount,
     category_id: categoryId,
     sub_category_id: subCategoryId,
     payment_method_id: paymentMethodId,
+    description: formData.description,
+    date: formData.date,
   };
 };
 
@@ -56,12 +104,13 @@ const handleSubmit = async () => {
   loading.value = true;
 
   try {
-    await addTransaction(getTransactionPayload());
-    clearForm();
+    const idParam = route.params.id;
+    if (!idParam) throw new Error("Transaction ID not found in route.");
+    await updateTransaction(Number(idParam), getTransactionPayload());
 
     toast.add({
       title: "Success",
-      description: "The Transaction has been added.",
+      description: "The Transaction has been updated.",
       color: "success",
     });
 
@@ -139,7 +188,7 @@ watch(transactionType, () => {
       <div>
         <div class="flex items-center gap-2 text-lg font-heading">
           <UIcon name="i-lucide-settings-2" class="size-6" />
-          Add Transaction
+          Edit Transaction
         </div>
       </div>
 
@@ -223,7 +272,20 @@ watch(transactionType, () => {
           block
           size="xl"
         >
-          {{ loading ? "Adding..." : "Add Transaction" }}
+          {{ loading ? "Updating..." : "Update Transaction" }}
+        </UButton>
+
+        <USeparator />
+
+        <UButton
+          type="button"
+          :loading="loading"
+          color="error"
+          variant="outline"
+          block
+          size="xl"
+        >
+          {{ loading ? "Deleting..." : "Delete Transaction" }}
         </UButton>
       </UForm>
     </div>
