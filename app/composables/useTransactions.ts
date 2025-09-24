@@ -156,6 +156,57 @@ export function useTransactions() {
     }
   };
 
+  const getTransactionById = async (id: number) => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      if (!userId.value) {
+        throw new Error("User not authenticated");
+      }
+
+      const { data, error: err } = await client
+        .from("transactions")
+        .select(
+          `
+          id,
+          type,
+          date,
+          amount,
+          description,
+          created_at,
+          categories (
+            id,
+            name,
+            icon
+          ),
+          sub_categories (
+            id,
+            name,
+            icon
+          ),
+          payment_methods (
+            id,
+            name,
+            icon
+          )
+        `
+        )
+        .eq("id", id)
+        .eq("user_id", userId.value)
+        .single();
+
+      if (err) throw err;
+
+      return data as TransactionWithRelations;
+    } catch (err: any) {
+      error.value = err.message || "Unknown error";
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
   return {
     transactions,
     loading,
@@ -164,5 +215,6 @@ export function useTransactions() {
     addTransaction,
     updateTransaction,
     deleteTransaction,
+    getTransactionById,
   };
 }

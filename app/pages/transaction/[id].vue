@@ -9,7 +9,7 @@ definePageMeta({
 });
 
 // Composables
-const { addTransaction, error } = useTransactions();
+const { getTransactionById, addTransaction, error } = useTransactions();
 const { getCategoryOptions, categoryExpenseOptions, categoryIncomeOptions } =
   useCategories();
 const { getPaymentMethods, paymentMethodOptions } = usePaymentMethods();
@@ -24,6 +24,8 @@ const form = ref({
   description: "",
   date: new Date().toISOString().substring(0, 10),
 });
+
+const route = useRoute();
 const loading = ref(false);
 const transactionTypes = [
   { value: "expense", label: "Expense" },
@@ -33,9 +35,47 @@ const transactionTypes = [
 // Mounted
 onMounted(async () => {
   await Promise.all([getCategoryOptions(), getPaymentMethods()]);
+  fetchTransaction();
 });
 
 // Methods
+async function fetchTransaction() {
+  // Fetch transaction by ID from route params and populate form
+  const idParam = route.params.id;
+  if (idParam) {
+    try {
+      const transaction = await getTransactionById(Number(idParam));
+      if (transaction) {
+        // Compose category_id as "categoryId-subCategoryId" if both exist
+        let categoryKey = undefined;
+        if (transaction.categories?.id && transaction.sub_categories?.id) {
+          categoryKey = `${transaction.categories.id}-${transaction.sub_categories.id}`;
+        } else if (transaction.categories?.id) {
+          categoryKey = `${transaction.categories.id}`;
+        }
+
+        form.value = {
+          type: transaction.type,
+          amount: transaction.amount,
+          category_id: categoryKey,
+          payment_method_id: transaction.payment_methods?.id
+            ? String(transaction.payment_methods.id)
+            : undefined,
+          description: transaction.description || "",
+          date: transaction.date
+            ? transaction.date.substring(0, 10)
+            : new Date().toISOString().substring(0, 10),
+        };
+      }
+    } catch (err: any) {
+      toast.add({
+        title: "Error",
+        description: err.message || "Failed to fetch transaction data.",
+        color: "error",
+      });
+    }
+  }
+}
 const getTransactionPayload = (): Transactions["Insert"] => {
   const formData = form.value;
 
