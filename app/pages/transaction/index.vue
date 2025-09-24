@@ -176,6 +176,8 @@ watch(transactionType, () => {
             class="w-full"
             size="xl"
             autofocus
+            type="text"
+            inputmode="numeric"
           />
         </UFormField>
 
