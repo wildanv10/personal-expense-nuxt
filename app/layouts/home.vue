@@ -1,8 +1,21 @@
 <script setup lang="ts">
+import type { TabsItem } from "@nuxt/ui";
+
 const { getTransactions, transactions } = useTransactions();
 const { selectedMonth, selectedYear } = usePeriod();
 
 // State
+const selectedPage = ref("transactions");
+const items = ref<TabsItem[]>([
+  {
+    label: "Transactions",
+    value: "transactions",
+  },
+  {
+    label: "Budgets",
+    value: "budgets",
+  },
+]);
 const summary = computed(() => calculateTransactionSummary(transactions.value));
 
 onMounted(async () => {
@@ -11,6 +24,10 @@ onMounted(async () => {
 
 watch([selectedMonth, selectedYear], async ([newMonth, newYear]) => {
   await getTransactions();
+});
+
+watch(selectedPage, () => {
+  navigateTo(selectedPage.value.toLowerCase());
 });
 </script>
 
@@ -74,6 +91,21 @@ watch([selectedMonth, selectedYear], async ([newMonth, newYear]) => {
         <HomePeriodSelector />
 
         <!-- Child Page -->
+
+        <div class="flex">
+          <UTabs
+            v-model="selectedPage"
+            color="neutral"
+            variant="link"
+            :content="false"
+            :items="items"
+            size="xl"
+            :ui="{
+              list: 'gap-3',
+              trigger: 'px-0 py-1',
+            }"
+          />
+        </div>
         <slot />
       </div>
     </NuxtLayout>

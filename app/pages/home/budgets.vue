@@ -1,3 +1,9 @@
+<script>
+definePageMeta({
+  layout: "home",
+});
+</script>
+
 <template>
   <div>
     <h1>Budgets</h1>

@@ -13,8 +13,6 @@ function selectTransaction(id: number) {
 
 <template>
   <div>
-    <h1 class="font-semibold">Transactions</h1>
-
     <div
       class="mt-2"
       v-for="(date, id) in groupTransactionsByDate(transactions)"
