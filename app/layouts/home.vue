@@ -3,9 +3,10 @@ import type { TabsItem } from "@nuxt/ui";
 
 const { getTransactions, transactions } = useTransactions();
 const { selectedMonth, selectedYear } = usePeriod();
+const router = useRoute();
 
 // State
-const selectedPage = ref("transactions");
+const selectedPage = ref("");
 const items = ref<TabsItem[]>([
   {
     label: "Transactions",
@@ -19,9 +20,16 @@ const items = ref<TabsItem[]>([
 const summary = computed(() => calculateTransactionSummary(transactions.value));
 
 onMounted(async () => {
+  getPageName();
   await getTransactions();
 });
 
+// Methods
+function getPageName() {
+  selectedPage.value = router.path.split("/")[2] || "transactions";
+}
+
+// Watcher
 watch([selectedMonth, selectedYear], async ([newMonth, newYear]) => {
   await getTransactions();
 });
