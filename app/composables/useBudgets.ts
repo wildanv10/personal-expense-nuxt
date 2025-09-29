@@ -3,35 +3,43 @@ import type { Budgets } from "~/types/database.types";
 
 export function useBudgets() {
   const client = useSupabaseClient();
-  const budgets = ref<Budgets["Row"][]>([]);
+  const { userId } = useAuth();
+  const budget = ref<Budgets["Row"]["budget"]>(null);
   const error = ref<PostgrestError | null>(null);
   const loading = ref(false);
 
   // Get budgets for a user (optionally filter by month/year)
-  const fetchBudgets = async (
-    userId: string,
-    month?: number,
-    year?: number
-  ) => {
+  const fetchBudgets = async (month?: number, year?: number) => {
     loading.value = true;
     error.value = null;
+    try {
+      if (!userId.value) {
+        throw new Error("User not authenticated");
+      }
 
-    let query = client.from("budgets").select("*").eq("user_id", userId);
+      let query = client
+        .from("budgets")
+        .select("*")
+        .eq("user_id", userId.value);
 
-    if (month) query = query.eq("month", month);
-    if (year) query = query.eq("year", year);
+      if (month) query = query.eq("month", month);
+      if (year) query = query.eq("year", year);
 
-    const { data, error: err } = await query.order("created_at", {
-      ascending: false,
-    });
+      // Only expect one budget per user per period
+      const { data, error: err } = await query
+        .order("created_at", { ascending: false })
+        .limit(1);
 
-    if (err) {
-      error.value = err;
-    } else {
-      budgets.value = data ?? [];
+      if (err) {
+        error.value = err;
+      } else {
+        budget.value = data[0]?.budget as Budgets["Row"]["budget"];
+      }
+    } catch (err: any) {
+      error.value = err.message || "Unknown error";
+    } finally {
+      loading.value = false;
     }
-
-    loading.value = false;
   };
 
   // Create budget
@@ -39,18 +47,30 @@ export function useBudgets() {
     loading.value = true;
     error.value = null;
 
-    const { data, error: err } = await client
-      .from("budgets")
-      .insert(payload)
-      .select()
-      .single();
+    try {
+      if (!userId.value) {
+        throw new Error("User not authenticated");
+      }
 
-    if (err) {
-      error.value = err;
+      const { data, error: err } = await client
+        .from("budgets")
+        .insert({ user_id: userId.value, ...payload })
+        .select()
+        .single();
+
+      if (err) {
+        error.value = err;
+      }
+
+      const createdBudget = data as Budgets["Row"] | null;
+      budget.value = createdBudget?.budget as Budgets["Row"]["budget"];
+      return createdBudget;
+    } catch (err: any) {
+      error.value = err.message || "Unknown error";
+      throw err;
+    } finally {
+      loading.value = false;
     }
-
-    loading.value = false;
-    return data as Budgets["Row"] | null;
   };
 
   // Update budget
@@ -58,50 +78,40 @@ export function useBudgets() {
     loading.value = true;
     error.value = null;
 
-    const { data, error: err } = await client
-      .from("budgets")
-      .update(payload)
-      .eq("id", id)
-      .select()
-      .single();
-
-    if (err) {
-      error.value = err;
-    } else if (data) {
-      const index = budgets.value.findIndex((b) => b.id === id);
-      if (index !== -1) {
-        const updatedBudget = data as Budgets["Row"];
-        budgets.value[index] = updatedBudget as Budgets["Row"];
+    try {
+      if (!userId.value) {
+        throw new Error("User not authenticated");
       }
+
+      const { data, error: err } = await client
+        .from("budgets")
+        .update({ user_id: userId.value, ...payload })
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (err) {
+        error.value = err;
+      } else if (data) {
+        const updatedBudget = data as Budgets["Row"];
+        budget.value = updatedBudget.budget as Budgets["Row"]["budget"];
+      }
+
+      return data as Budgets["Row"] | null;
+    } catch (err: any) {
+      error.value = err.message || "Unknown error";
+      throw err;
+    } finally {
+      loading.value = false;
     }
-
-    loading.value = false;
-    return data as Budgets["Row"] | null;
-  };
-
-  // Delete budget
-  const deleteBudget = async (id: string) => {
-    loading.value = true;
-    error.value = null;
-
-    const { error: err } = await client.from("budgets").delete().eq("id", id);
-
-    if (err) {
-      error.value = err;
-    } else {
-      budgets.value = budgets.value.filter((b) => b.id !== id);
-    }
-
-    loading.value = false;
   };
 
   return {
-    budgets,
+    budget,
     error,
     loading,
     fetchBudgets,
     createBudget,
     updateBudget,
-    deleteBudget,
   };
 }
