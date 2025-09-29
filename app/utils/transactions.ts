@@ -33,7 +33,15 @@ export function groupTransactionsByDate(
   // Sort date descending
 
   return transactions
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .sort((a, b) => {
+      if (a.created_at && b.created_at) {
+        return (
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+      } else {
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      }
+    })
     .reduce((groups, transaction) => {
       const date = transaction.date;
       if (!groups[date]) {
