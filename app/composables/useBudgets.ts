@@ -106,9 +106,8 @@ export function useBudgets() {
         error.value = err;
       }
 
-      const createdBudget = data as Budgets["Row"] | null;
-      budgetInfo.value.budget =
-        createdBudget?.budget as Budgets["Row"]["budget"];
+      const createdBudget = data as Budgets["Row"];
+      budgetInfo.value = createdBudget;
       return createdBudget;
     } catch (err: any) {
       error.value = err.message || "Unknown error";

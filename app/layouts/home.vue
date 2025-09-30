@@ -2,7 +2,6 @@
 import type { TabsItem } from "@nuxt/ui";
 
 const { getTransactions, transactions } = useTransactions();
-const { selectedMonth, selectedYear } = usePeriod();
 const router = useRoute();
 
 // State
@@ -28,11 +27,6 @@ onMounted(async () => {
 function getPageName() {
   selectedPage.value = router.path.split("/")[2] || "transactions";
 }
-
-// Watcher
-watch([selectedMonth, selectedYear], async ([newMonth, newYear]) => {
-  await getTransactions();
-});
 
 watch(selectedPage, () => {
   navigateTo(selectedPage.value.toLowerCase());

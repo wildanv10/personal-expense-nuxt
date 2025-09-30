@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import type { Budget } from "~/types/database.types";
-import { useBudgets } from "~/composables/useBudgets";
-import { usePeriod } from "~/composables/usePeriod";
-import { useCategories } from "~/composables/useCategories";
-import { useSubCategories } from "~/composables/useSubCategories";
 
 definePageMeta({ layout: "home" });
 
@@ -13,8 +9,8 @@ const { selectedMonth, selectedYear } = usePeriod();
 const { categories, getCategories } = useCategories();
 const { subCategories, getSubCategories } = useSubCategories();
 
-onMounted(() => {
-  ensureBudgetsForPeriod();
+onMounted(async () => {
+  await ensureBudgetsForPeriod();
 });
 
 // Methods
@@ -87,21 +83,9 @@ async function ensureBudgetsForPeriod() {
   }
 }
 
-// Computed
-const categoryNameMap = computed(() => {
-  const map: Record<number, string> = {};
-  for (const c of categories.value) {
-    map[c.id] = c.name;
-  }
-  return map;
-});
-
-const subCategoryNameMap = computed(() => {
-  const map: Record<number, string> = {};
-  for (const sc of subCategories.value) {
-    map[sc.id] = sc.name;
-  }
-  return map;
+// Watcher
+watch([selectedMonth, selectedYear], async () => {
+  await ensureBudgetsForPeriod();
 });
 </script>
 
