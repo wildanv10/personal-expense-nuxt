@@ -57,7 +57,7 @@ export type Database = {
           year: number;
         };
         Update: {
-          budget?: Budget;
+          budget: Budget;
           created_at?: string | null;
           id?: string;
           month?: number;

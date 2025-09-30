@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import type { Database } from "~/types/database.types";
+
 const { categories } = useCategories();
 
 const props = defineProps<{
-  budget: object;
+  transaction_type: Database["public"]["Enums"]["transaction_type"];
+  categories: object;
 }>();
 
 const categoryNameMap = computed(() => {
@@ -17,7 +20,7 @@ const categoryNameMap = computed(() => {
 <template>
   <div>
     <div
-      v-for="(category, category_id) in props.budget"
+      v-for="(sub_categories, category_id) in props.categories"
       :key="category_id"
       class="mb-3 card relative pt-3"
     >
@@ -29,7 +32,11 @@ const categoryNameMap = computed(() => {
         }}
       </h3>
       <div class="flex flex-col gap-3">
-        <BudgetListSubCategory :category="category" />
+        <BudgetListSubCategory
+          :transaction_type="transaction_type"
+          :category_id="Number(category_id)"
+          :sub_categories="sub_categories"
+        />
       </div>
     </div>
   </div>

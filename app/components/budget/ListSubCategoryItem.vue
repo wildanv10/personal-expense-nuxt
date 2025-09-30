@@ -1,13 +1,22 @@
 <script setup lang="ts">
+import type { Database } from "~/types/database.types";
 import { useSubCategories } from "~/composables/useSubCategories";
+import { useBudgets } from "~/composables/useBudgets";
+import debounce from "lodash.debounce";
 
+// Composable
 const { subCategories } = useSubCategories();
+const { budgetInfo, budget, updateBudget } = useBudgets();
 
+// Props
 const props = defineProps<{
+  transaction_type: Database["public"]["Enums"]["transaction_type"];
+  category_id: number;
   sub_category_id: number;
   amount: number;
 }>();
 
+// State
 const localAmount = ref(props.amount);
 
 // Methods
@@ -18,10 +27,23 @@ function onAmountInput(e: Event) {
   const parsedValue = cleanedInput ? parseInt(cleanedInput, 10) : 0;
   localAmount.value = parsedValue;
 
-  // Emit cleaned Amount value to parent
-  console.log("Amount: ", parsedValue);
+  // Update budget in composable and debounce DB update
+  if (budgetInfo.value?.id) {
+    // Clone and update local budget value immediately
+    const updatedBudget = JSON.parse(
+      JSON.stringify(budget.value || { income: {}, expense: {} })
+    );
+    if (!updatedBudget[props.transaction_type])
+      updatedBudget[props.transaction_type] = {};
+    if (!updatedBudget[props.transaction_type][props.category_id])
+      updatedBudget[props.transaction_type][props.category_id] = {};
+    updatedBudget[props.transaction_type][props.category_id][
+      props.sub_category_id
+    ] = parsedValue;
+    budgetInfo.value.budget = updatedBudget;
+    debouncedUpdateBudget(parsedValue);
+  }
 }
-
 function onAmountKeyPress(e: KeyboardEvent) {
   // Allow only digits
   const char = e.key;
@@ -29,6 +51,21 @@ function onAmountKeyPress(e: KeyboardEvent) {
     e.preventDefault();
   }
 }
+const debouncedUpdateBudget = debounce(async (amount: number) => {
+  if (!budgetInfo.value?.id) return;
+  // Clone the budget object to avoid mutating refs directly
+  const updatedBudget = JSON.parse(
+    JSON.stringify(budget.value || { income: {}, expense: {} })
+  );
+  if (!updatedBudget[props.transaction_type])
+    updatedBudget[props.transaction_type] = {};
+  if (!updatedBudget[props.transaction_type][props.category_id])
+    updatedBudget[props.transaction_type][props.category_id] = {};
+  updatedBudget[props.transaction_type][props.category_id][
+    props.sub_category_id
+  ] = amount;
+  await updateBudget(budgetInfo.value?.id, { budget: updatedBudget });
+}, 500);
 
 // Computed
 const subCategoryNameMap = computed(() => {
@@ -38,7 +75,6 @@ const subCategoryNameMap = computed(() => {
   }
   return map;
 });
-
 const formattedAmount = computed(() => {
   if (
     localAmount.value === null ||

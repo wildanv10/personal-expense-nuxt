@@ -7,7 +7,7 @@ const props = defineProps<{
 <template>
   <div>
     <div
-      v-for="(type, transaction_type) in props.budget"
+      v-for="(categories, transaction_type) in props.budget"
       :key="transaction_type"
       class="mb-4 relative"
     >
@@ -17,7 +17,10 @@ const props = defineProps<{
         {{ transaction_type }}
       </h2>
 
-      <BudgetListCategory :budget="type" />
+      <BudgetListCategory
+        :transaction_type="transaction_type"
+        :categories="categories"
+      />
     </div>
   </div>
 </template>

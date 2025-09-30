@@ -4,7 +4,17 @@ import type { Budgets } from "~/types/database.types";
 export function useBudgets() {
   const client = useSupabaseClient();
   const { userId } = useAuth();
-  const budget = ref<Budgets["Row"]["budget"]>(null);
+  const budgetInfo = useState<Budgets["Row"]>("budgetInfo", () => ({
+    id: "",
+    user_id: "",
+    month: 0,
+    year: 0,
+    budget: {} as Budgets["Row"]["budget"],
+    created_at: null,
+  }));
+  const budget = computed<Budgets["Row"]["budget"]>(() => {
+    return budgetInfo.value?.budget;
+  });
   const error = ref<PostgrestError | null>(null);
   const loading = ref(false);
 
@@ -33,7 +43,7 @@ export function useBudgets() {
       if (err) {
         error.value = err;
       } else {
-        budget.value = data[0]?.budget as Budgets["Row"]["budget"];
+        budgetInfo.value = data[0] as Budgets["Row"];
       }
     } catch (err: any) {
       error.value = err.message || "Unknown error";
@@ -63,7 +73,8 @@ export function useBudgets() {
       }
 
       const createdBudget = data as Budgets["Row"] | null;
-      budget.value = createdBudget?.budget as Budgets["Row"]["budget"];
+      budgetInfo.value.budget =
+        createdBudget?.budget as Budgets["Row"]["budget"];
       return createdBudget;
     } catch (err: any) {
       error.value = err.message || "Unknown error";
@@ -94,7 +105,8 @@ export function useBudgets() {
         error.value = err;
       } else if (data) {
         const updatedBudget = data as Budgets["Row"];
-        budget.value = updatedBudget.budget as Budgets["Row"]["budget"];
+        budgetInfo.value.budget =
+          updatedBudget.budget as Budgets["Row"]["budget"];
       }
 
       return data as Budgets["Row"] | null;
@@ -107,6 +119,7 @@ export function useBudgets() {
   };
 
   return {
+    budgetInfo,
     budget,
     error,
     loading,
