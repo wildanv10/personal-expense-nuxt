@@ -52,6 +52,40 @@ export function useBudgets() {
     }
   };
 
+  // Get previous budgets to get the budget template
+  const fetchPreviousBudgets = async (month?: number, year?: number) => {
+    loading.value = true;
+    error.value = null;
+    try {
+      if (!userId.value) {
+        throw new Error("User not authenticated");
+      }
+
+      let query = client
+        .from("budgets")
+        .select("*")
+        .eq("user_id", userId.value);
+
+      if (month) query = query.eq("month", month);
+      if (year) query = query.eq("year", year);
+
+      // Only expect one budget per user per period
+      const { data, error: err } = await query
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+      if (err) {
+        error.value = err;
+      } else {
+        return data[0] as Budgets["Row"];
+      }
+    } catch (err: any) {
+      error.value = err.message || "Unknown error";
+    } finally {
+      loading.value = false;
+    }
+  };
+
   // Create budget
   const createBudget = async (payload: Budgets["Insert"]) => {
     loading.value = true;
@@ -124,6 +158,7 @@ export function useBudgets() {
     error,
     loading,
     fetchBudgets,
+    fetchPreviousBudgets,
     createBudget,
     updateBudget,
   };
