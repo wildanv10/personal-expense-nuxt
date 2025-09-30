@@ -1,20 +1,28 @@
 <script setup lang="ts">
-const { transactions, loading, error } = useTransactions();
+const { selectedMonth, selectedYear } = usePeriod();
+const { getTransactions, transactions, loading, error } = useTransactions();
 
 definePageMeta({
   layout: "home",
+});
+
+onMounted(async () => {
+  await getTransactions();
 });
 
 // Methods
 function selectTransaction(id: number) {
   navigateTo(`${constants.routes.transaction}/${id}`);
 }
+
+// Watcher
+watch([selectedMonth, selectedYear], async ([newMonth, newYear]) => {
+  await getTransactions();
+});
 </script>
 
 <template>
   <div>
-    <h1 class="font-semibold">Transactions</h1>
-
     <div
       class="mt-2"
       v-for="(date, id) in groupTransactionsByDate(transactions)"

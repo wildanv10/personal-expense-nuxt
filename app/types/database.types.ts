@@ -41,7 +41,7 @@ export type Database = {
     Tables: {
       budgets: {
         Row: {
-          budget: Json;
+          budget: Budget;
           created_at: string | null;
           id: string;
           month: number;
@@ -49,15 +49,15 @@ export type Database = {
           year: number;
         };
         Insert: {
-          budget: Json;
+          budget: Budget;
           created_at?: string | null;
           id?: string;
           month: number;
-          user_id: string;
+          user_id?: string;
           year: number;
         };
         Update: {
-          budget?: Json;
+          budget: Budget;
           created_at?: string | null;
           id?: string;
           month?: number;
@@ -361,6 +361,18 @@ export const Constants = {
 } as const;
 
 export type Budgets = Database["public"]["Tables"]["budgets"];
+export type Budget = {
+  income: {
+    [category_id: number]: {
+      [sub_category_id: number]: number;
+    };
+  };
+  expense: {
+    [category_id: number]: {
+      [sub_category_id: number]: number;
+    };
+  };
+} | null;
 export type Categories = Database["public"]["Tables"]["categories"];
 export type SubCategories = Database["public"]["Tables"]["sub_categories"];
 export type PaymentMethods = Database["public"]["Tables"]["payment_methods"];
