@@ -12,6 +12,11 @@ const { selectedMonth, selectedYear } = usePeriod();
 const { categories, getCategories } = useCategories();
 const { subCategories, getSubCategories } = useSubCategories();
 
+onMounted(() => {
+  ensureBudgetsForPeriod();
+});
+
+// Methods
 async function ensureBudgetsForPeriod() {
   await Promise.all([getCategories(), getSubCategories()]);
   await fetchBudgets(selectedMonth.value + 1, selectedYear.value);
@@ -33,14 +38,14 @@ async function ensureBudgetsForPeriod() {
 
     for (const category of categories.value) {
       const subCats = subCategoriesByCategory[category.id] || [];
-      const subCatObj: Record<string, number> = {};
+      const subCatObj: Record<number, number> = {};
       for (const sub of subCats) {
-        subCatObj[sub.name] = 0;
+        subCatObj[sub.id] = 0;
       }
       if (category.type === "income") {
-        budgetObj.income[category.name] = subCatObj;
+        budgetObj.income[category.id] = subCatObj;
       } else if (category.type === "expense") {
-        budgetObj.expense[category.name] = subCatObj;
+        budgetObj.expense[category.id] = subCatObj;
       }
     }
 
@@ -53,8 +58,21 @@ async function ensureBudgetsForPeriod() {
   }
 }
 
-onMounted(() => {
-  ensureBudgetsForPeriod();
+// Computed
+const categoryNameMap = computed(() => {
+  const map: Record<number, string> = {};
+  for (const c of categories.value) {
+    map[c.id] = c.name;
+  }
+  return map;
+});
+
+const subCategoryNameMap = computed(() => {
+  const map: Record<number, string> = {};
+  for (const sc of subCategories.value) {
+    map[sc.id] = sc.name;
+  }
+  return map;
 });
 </script>
 
@@ -79,34 +97,40 @@ onMounted(() => {
             {{ transaction_type }}
           </h2>
           <div
-            v-for="(category, category_key) in type"
-            :key="category_key"
+            v-for="(category, category_id) in type"
+            :key="category_id"
             class="mb-3 card relative pt-3"
           >
             <h3
               class="text-base font-medium text-gray-700 mb-1 w-full sticky top-24 bg-white pt-1 pb-2 z-10"
             >
-              {{ category_key }}
+              {{
+                categoryNameMap[Number(category_id)] ||
+                `Category - ${category_id}`
+              }}
             </h3>
             <div class="flex flex-col gap-3">
               <div
-                v-for="(amount, sub_category_key) in category"
-                :key="sub_category_key"
+                v-for="(amount, sub_category_id) in category"
+                :key="sub_category_id"
                 class="rounded-lg py-2 px-3 flex flex-col gap-1"
               >
                 <!-- First row: Sub Category Name and Amount Input -->
                 <div class="flex items-center justify-between">
                   <span class="text-sm font-medium text-gray-800">
-                    {{ sub_category_key }}
+                    {{
+                      subCategoryNameMap[Number(sub_category_id)] ||
+                      `Sub Category - ${sub_category_id}`
+                    }}
                   </span>
                   <UInput
                     :value="
-                      budget?.[transaction_type]?.[category_key]?.[
-                        sub_category_key
+                      budget?.[transaction_type]?.[category_id]?.[
+                        sub_category_id
                       ]
                     "
                     :size="'sm'"
-                    type="text"
+                    type="number"
                     class="w-24 text-right"
                   />
                 </div>

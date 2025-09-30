@@ -363,13 +363,13 @@ export const Constants = {
 export type Budgets = Database["public"]["Tables"]["budgets"];
 export type Budget = {
   income: {
-    [category_name: string]: {
-      [sub_category_name: string]: number;
+    [category_id: number]: {
+      [sub_category_id: number]: number;
     };
   };
   expense: {
-    [category_name: string]: {
-      [sub_category_name: string]: number;
+    [category_id: number]: {
+      [sub_category_id: number]: number;
     };
   };
 } | null;
