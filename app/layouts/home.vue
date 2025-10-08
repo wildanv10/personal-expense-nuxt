@@ -2,6 +2,8 @@
 import type { TabsItem } from "@nuxt/ui";
 
 const { getTransactions, transactions } = useTransactions();
+const { getBudgets } = useBudgets();
+const { selectedMonth, selectedYear } = usePeriod();
 const router = useRoute();
 
 // State
@@ -20,13 +22,20 @@ const summary = computed(() => calculateTransactionSummary(transactions.value));
 
 onMounted(async () => {
   getPageName();
-  await getTransactions();
+  getTransactions();
+  getBudgets();
 });
 
 // Methods
 function getPageName() {
   selectedPage.value = router.path.split("/")[2] || "transactions";
 }
+
+// Watcher
+watch([selectedMonth, selectedYear], async () => {
+  getTransactions();
+  getBudgets();
+});
 
 watch(selectedPage, () => {
   navigateTo(selectedPage.value.toLowerCase());
