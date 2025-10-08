@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import type { Section } from "~/types/sections";
+
 const props = defineProps<{
-  items?: any;
+  sections: Section[];
   selectedItem?: number | string | null;
 }>();
 
@@ -25,11 +27,19 @@ function isActive(id: number | string | null) {
         <slot name="content-add" />
       </div>
 
-      <!-- Content List -->
-      <div v-if="$slots['content-list']">
+      <!-- Multiple Content Lists -->
+      <div
+        v-for="(section, sectionIndex) in sections"
+        :key="`section-${sectionIndex}`"
+        class="flex flex-col"
+      >
+        <div v-if="section.title" class="text-base font-medium text-gray-600">
+          {{ section.title }}
+        </div>
+
         <div
-          v-for="(item, key) in items"
-          :key="`item-${key}`"
+          v-for="(item, key) in section.items"
+          :key="`item-${sectionIndex}-${key}`"
           class="flex items-center gap-2 py-1 px-2 border border-transparent"
           :class="{
             '!border-gray-200 shadow-xs rounded-lg': isActive(item.id),
