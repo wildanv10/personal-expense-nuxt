@@ -16,7 +16,10 @@ export function useBudgets() {
     created_at: null,
   }));
   const budget = computed<Budgets["Row"]["budget"]>(() => {
-    return budgetInfo.value?.budget;
+    return {
+      expense: budgetInfo.value?.budget?.expense || {},
+      income: budgetInfo.value?.budget?.income || {},
+    };
   });
   const error = ref<PostgrestError | null>(null);
   const loading = ref(false);
