@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Section, SectionItem } from "~/types/sections";
+
 // Composables
 const { getCategories, categories, loading, error } = useCategories();
 
@@ -34,11 +36,33 @@ async function onCloseDrawerEdit() {
   isDrawerEditOpen.value = false;
   selectedId.value = null;
 }
+
+// Computed
+const sections = computed<Section[]>(() => {
+  const grouped = categories.value.reduce<Record<string, SectionItem[]>>(
+    (acc, item) => {
+      (acc[item.type] ??= []).push(item);
+      return acc;
+    },
+    {}
+  );
+
+  return Object.entries(grouped)
+    .sort(([typeA], [typeB]) => {
+      if (typeA === "expense") return -1;
+      if (typeB === "expense") return 1;
+      return typeA.localeCompare(typeB);
+    })
+    .map(([type, items]) => ({
+      title: type.charAt(0).toUpperCase() + type.slice(1),
+      items,
+    }));
+});
 </script>
 
 <template>
   <section>
-    <SettingsConfigurationCard :items="categories" :selected-item="selectedId">
+    <SettingsConfigurationCard :sections="sections" :selected-item="selectedId">
       <template #header>
         <UIcon name="i-lucide-box" class="size-6" />
         Categories
