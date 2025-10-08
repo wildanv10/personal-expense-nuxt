@@ -5,6 +5,7 @@ import { useBudgets } from "~/composables/useBudgets";
 import debounce from "lodash.debounce";
 
 // Composable
+const { transactions } = useTransactions();
 const { subCategories } = useSubCategories();
 const { budgetInfo, budget, updateBudget } = useBudgets();
 
@@ -86,6 +87,36 @@ const formattedAmount = computed(() => {
   // Format with dot as thousands separator
   return localAmount.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 });
+// Calculate total actual transaction amount for this subcategory
+const actualAmount = computed(() => {
+  // Only count transactions that match this sub_category_id, category_id, and transaction_type
+  return transactions.value
+    .filter(
+      (t) =>
+        t.type === props.transaction_type &&
+        t.categories?.id === props.category_id &&
+        t.sub_categories?.id === props.sub_category_id
+    )
+    .reduce((sum, t) => sum + (t.amount || 0), 0);
+});
+
+const isNoBudget = computed(
+  () => !localAmount.value || localAmount.value === 0
+);
+const isNoTransactions = computed(
+  () => !actualAmount.value || actualAmount.value === 0
+);
+
+// Calculate progress percentage (actual / budgeted)
+const progressPercent = computed(() => {
+  if (isNoBudget.value && isNoTransactions.value) return 0;
+  else if (isNoBudget.value && !isNoTransactions.value) return 100;
+  else {
+    const percent = (actualAmount.value / localAmount.value) * 100;
+    // return Math.min(100, Math.round(percent));
+    return Math.round(percent);
+  }
+});
 
 // Watcher
 watch(
@@ -97,34 +128,58 @@ watch(
 </script>
 
 <template>
-  <div class="rounded-lg py-1 flex flex-col gap-1">
+  <div class="rounded-lg py-1 flex flex-col">
     <!-- First row: Sub Category Name and Amount Input -->
     <div class="flex items-center justify-between">
-      <span class="text-sm text-gray-800">
-        {{
-          subCategoryNameMap[Number(props.sub_category_id)] ||
-          `Sub Category - ${props.sub_category_id}`
-        }}
+      <span class="flex flex-col">
+        <span class="text-sm text-gray-800">
+          {{
+            subCategoryNameMap[Number(props.sub_category_id)] ||
+            `Sub Category - ${props.sub_category_id}`
+          }}
+        </span>
+
+        <span class="text-sm">
+          Total: {{ formatWithThousandSeparator(actualAmount) }}
+        </span>
       </span>
       <UInput
         :value="formattedAmount"
         @input="onAmountInput"
         @keypress="onAmountKeyPress"
-        :size="'sm'"
+        :size="'md'"
         type="text"
         inputmode="numeric"
         class="w-24"
         :ui="{
-          base: 'text-right',
+          base: 'text-right py-1 px-2',
         }"
       />
     </div>
-    <!-- Second row: Progress Bar (static for now) -->
-    <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-      <div
-        class="h-full bg-primary-500 transition-all duration-300"
-        :style="{ width: '0%' }"
-      ></div>
+    <!-- Second row: Progress Bar -->
+    <div class="flex items-center gap-1">
+      <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div
+          class="h-full transition-all duration-300"
+          :class="{
+            'bg-primary':
+              !isNoBudget && !isNoTransactions && progressPercent <= 100,
+            'bg-amber-600':
+              (isNoBudget && !isNoTransactions) ||
+              (!isNoBudget && !isNoTransactions && progressPercent > 100),
+          }"
+          :style="{ width: progressPercent + '%' }"
+        ></div>
+      </div>
+
+      <span class="text-xs text-right flex items-center justify-end">
+        <UIcon
+          v-if="isNoBudget && !isNoTransactions"
+          :name="`i-lucide-chevron-right`"
+          size="12"
+        />
+        {{ progressPercent }}%
+      </span>
     </div>
   </div>
 </template>
