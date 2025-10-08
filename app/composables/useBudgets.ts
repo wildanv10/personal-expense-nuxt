@@ -1,9 +1,12 @@
 import type { PostgrestError } from "@supabase/supabase-js";
-import type { Budgets } from "~/types/database.types";
+import type { Budgets, Budget } from "~/types/database.types";
 
 export function useBudgets() {
   const client = useSupabaseClient();
   const { userId } = useAuth();
+  const { selectedMonth, selectedYear } = usePeriod();
+  const { categories, getCategories } = useCategories();
+  const { subCategories, getSubCategories } = useSubCategories();
   const budgetInfo = useState<Budgets["Row"]>("budgetInfo", () => ({
     id: "",
     user_id: "",
@@ -13,10 +16,82 @@ export function useBudgets() {
     created_at: null,
   }));
   const budget = computed<Budgets["Row"]["budget"]>(() => {
-    return budgetInfo.value?.budget;
+    return {
+      expense: budgetInfo.value?.budget?.expense || {},
+      income: budgetInfo.value?.budget?.income || {},
+    };
   });
   const error = ref<PostgrestError | null>(null);
   const loading = ref(false);
+
+  const getBudgets = async () => {
+    await Promise.all([getCategories(), getSubCategories()]);
+    await fetchBudgets(selectedMonth.value + 1, selectedYear.value);
+
+    if (!budget.value) {
+      // Try to get previous month's budget
+      let prevMonth = selectedMonth.value;
+      let prevYear = selectedYear.value;
+      if (prevMonth === 0) {
+        prevMonth = 11;
+        prevYear -= 1;
+      } else {
+        prevMonth -= 1;
+      }
+
+      // Fetch previous month's budget
+      // Fetch previous month's budget and check budget.value
+      let prevBudget: Budget | null = null;
+      try {
+        const prevBudgetInfo = await fetchPreviousBudgets(
+          prevMonth + 1,
+          prevYear
+        );
+        prevBudget = prevBudgetInfo?.budget || null;
+      } catch (e) {
+        prevBudget = null;
+      }
+
+      let budgetObj: Budget;
+      if (prevBudget) {
+        budgetObj = prevBudget;
+      } else {
+        // Generate Budget payload with zeros (existing logic)
+        budgetObj = {
+          income: {},
+          expense: {},
+        };
+        // Group subCategories by category_id (skip if category_id is null)
+        const subCategoriesByCategory: Record<
+          number,
+          typeof subCategories.value
+        > = {};
+        for (const sub of subCategories.value) {
+          if (sub.category_id == null) continue;
+          (subCategoriesByCategory[sub.category_id] ||= []).push(sub);
+        }
+        for (const category of categories.value) {
+          const subCats = subCategoriesByCategory[category.id] || [];
+          const subCatObj: Record<number, number> = {};
+          for (const sub of subCats) {
+            subCatObj[sub.id] = 0;
+          }
+          if (category.type === "income") {
+            budgetObj.income[category.id] = subCatObj;
+          } else if (category.type === "expense") {
+            budgetObj.expense[category.id] = subCatObj;
+          }
+        }
+      }
+
+      // Execute createBudget
+      await createBudget({
+        month: selectedMonth.value + 1,
+        year: selectedYear.value,
+        budget: budgetObj,
+      });
+    }
+  };
 
   // Get budgets for a user (optionally filter by month/year)
   const fetchBudgets = async (month?: number, year?: number) => {
@@ -156,6 +231,7 @@ export function useBudgets() {
     budget,
     error,
     loading,
+    getBudgets,
     fetchBudgets,
     fetchPreviousBudgets,
     createBudget,

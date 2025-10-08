@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { SubCategories } from "~/types/database.types";
+import type { Section, SectionItem } from "~/types/sections";
 import type { SubCategoryData } from "~/types/subCategories";
 
 // Composables
@@ -41,12 +42,21 @@ async function onCloseDrawerEdit() {
   isDrawerEditOpen.value = false;
   selectedItemID.value = null;
 }
+
+// Computed
+const sections = computed<Section[]>(() => {
+  return [
+    {
+      items: subCategory.value,
+    },
+  ];
+});
 </script>
 
 <template>
   <section>
     <SettingsConfigurationCard
-      :items="subCategory"
+      :sections="sections"
       :selected-item="selectedItemID"
     >
       <template #header>

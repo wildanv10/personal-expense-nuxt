@@ -1,6 +1,6 @@
 <template>
   <footer
-    class="sticky bottom-0 w-full py-4 bg-white border border-b-0 border-gray-100"
+    class="sticky bottom-0 w-full py-4 bg-white border border-b-0 border-gray-100 z-20"
   >
     <UiFooterMenuWrapper>
       <UiFooterMenu

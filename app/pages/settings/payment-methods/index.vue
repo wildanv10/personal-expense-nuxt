@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Section, SectionItem } from "~/types/sections";
+
 // Composables
 const { getPaymentMethods, paymentMethods, loading, error } =
   usePaymentMethods();
@@ -35,14 +37,20 @@ async function onCloseDrawerEdit() {
   isDrawerEditOpen.value = false;
   selectedPM.value = null;
 }
+
+// Computed
+const sections = computed<Section[]>(() => {
+  return [
+    {
+      items: paymentMethods.value,
+    },
+  ];
+});
 </script>
 
 <template>
   <section>
-    <SettingsConfigurationCard
-      :items="paymentMethods"
-      :selected-item="selectedPM"
-    >
+    <SettingsConfigurationCard :sections="sections" :selected-item="selectedPM">
       <template #header>
         <UIcon name="i-lucide-hand-coins" class="size-6" />
         Payment Methods
